@@ -1,191 +1,140 @@
-// بيانات الترجمة والأخبار المتكاملة
-const i18nData = {
-    ar: {
-        urgentTitle: "عاجل",
-        tickerNews: [
-            "تعزيز التدابير الأمنية في إقليم بحر الغزال لمواجهة التحديات الأخيرة",
-            "افتتاح مشاريع تنموية جديدة في أنجمينا لدعم الشباب",
-            "انطلاق فعاليات المنتدى الاقتصادي الوطني لتشجيع الاستثمار في تشاد"
-        ],
-        categories: {
-            tchad: "تشاد",
-            afrique: "إفريقيا",
-            monde: "العالم",
-            opinion: "مقالات الرأي"
-        },
-        news: [
-            {
-                title: "تعزيز الأمن وتأمين المناطق الحدودية في تشاد",
-                desc: "اتخذت السلطات المحلية إجراءات جديدة لتعزيز الأمن والاستقرار وتأمين المناطق الحدودية.",
-                category: "tchad",
-                date: "قبل ساعتين"
-            },
-            {
-                title: "قمة الاتحاد الإفريقي تمناقش التنمية الاقتصادية",
-                desc: "اجتمع قادة الدول الإفريقية لبحث سبل تعزيز التبادل التجاري وتطوير البنية التحتية.",
-                category: "afrique",
-                date: "قبل 4 ساعات"
-            },
-            {
-                title: "تطورات جديدة في الأسواق والاقتصاد العالمي",
-                desc: "شهدت الأسواق العالمية تقلبات جديدة وسط تغيرات أسعار النفط والطاقة الدولية.",
-                category: "monde",
-                date: "قبل 6 ساعات"
-            }
-        ]
-    },
-    fr: {
-        urgentTitle: "URGENT",
-        tickerNews: [
-            "La province du Moyen-Chari renforce son dispositif face aux inondations",
-            "Inauguration de nouveaux projets de développement à N'Djamena",
-            "Lancement du Forum Économique National pour encourager l'investissement"
-        ],
-        categories: {
-            tchad: "Tchad",
-            afrique: "Afrique",
-            monde: "Monde",
-            opinion: "Articles d'opinion"
-        },
-        news: [
-            {
-                title: "Renforcement de la sécurité dans le Chari-Baguirmi",
-                desc: "Les autorités locales prennent de nouvelles mesures pour sécuriser la région.",
-                category: "tchad",
-                date: "Il y a 2h"
-            },
-            {
-                title: "Sommet de l'Union Africaine sur le développement",
-                desc: "Les dirigeants africains se réunissent pour discuter du commerce intra-africain.",
-                category: "afrique",
-                date: "Il y a 4h"
-            }
-        ]
-    },
-    en: {
-        urgentTitle: "BREAKING",
-        tickerNews: [
-            "New development projects launched in N'Djamena to support youth",
-            "African Union summit discusses economic development and infrastructure",
-            "Global stock markets experience fluctuations amid oil price changes"
-        ],
-        categories: {
-            tchad: "Chad",
-            afrique: "Africa",
-            monde: "World",
-            opinion: "Opinion Pieces"
-        },
-        news: [
-            {
-                title: "Security Measures Reinforced in Chari-Baguirmi",
-                desc: "Local authorities take new steps to ensure safety across the region.",
-                category: "tchad",
-                date: "2 hours ago"
-            },
-            {
-                title: "African Union Summit Focuses on Trade",
-                desc: "Leaders gather to discuss regional trade and infrastructure development.",
-                category: "afrique",
-                date: "4 hours ago"
-            }
-        ]
-    }
-};
-
-let currentLang = 'ar';
-let currentCategory = 'all';
-
-// تبديل اللغة
-function switchLanguage(lang) {
-    currentLang = lang;
-    document.documentElement.lang = lang;
-    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-
-    // تحديث أزرار اللغة
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
-    });
-
-    // تحديث شريط العاجل
-    const tickerTitle = document.querySelector('.ticker-title');
-    const tickerContent = document.getElementById('ticker-content');
-    
-    if (tickerTitle) tickerTitle.textContent = i18nData[lang].urgentTitle;
-    if (tickerContent) {
-        tickerContent.innerHTML = i18nData[lang].tickerNews
-            .map(item => `<span style="display:inline-block; margin:0 15px;">🚨 ${item}</span>`)
-            .join(' ');
-    }
-
-    // تحديث أزرار الأقسام
-    document.querySelectorAll('.category-btn').forEach(btn => {
-        const catKey = btn.getAttribute('data-category');
-        if (catKey && i18nData[lang].categories[catKey]) {
-            btn.textContent = i18nData[lang].categories[catKey];
-        }
-    });
-
-    renderNews();
-}
-
-// عرض الأخبار
-function renderNews() {
-    let targetContainer = document.getElementById('opinion-articles-list') || document.getElementById('news-container');
-    
-    if (!targetContainer) {
-        targetContainer = document.createElement('div');
-        targetContainer.id = 'news-container';
-        targetContainer.className = 'news-grid';
-        document.querySelector('main')?.appendChild(targetContainer);
-    }
-
-    const articles = i18nData[currentLang].news.filter(item => 
-        currentCategory === 'all' || item.category === currentCategory
-    );
-
-    if (articles.length === 0) {
-        targetContainer.innerHTML = `<p style="text-align:center; padding:20px;">لا توجد أخبار حالياً لهذا القسم.</p>`;
-        return;
-    }
-
-    targetContainer.innerHTML = articles.map(item => `
-        <article class="news-card" style="background:var(--card-bg, #fff); padding:15px; margin:15px 0; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
-            <span class="category-badge" style="background:#002b66; color:#fff; padding:3px 8px; border-radius:4px; font-size:12px;">${i18nData[currentLang].categories[item.category] || item.category}</span>
-            <h3 style="margin:10px 0 5px 0;">${item.title}</h3>
-            <p style="color:#555; font-size:14px; line-height:1.5;">${item.desc}</p>
-            <span class="news-date" style="color:#888; font-size:12px;">${item.date}</span>
-        </article>
-    `).join('');
-}
-
-// تفعيل أحداث الأزرار عند التحميل
 document.addEventListener('DOMContentLoaded', () => {
-    // أزرار اللغة
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const lang = e.target.getAttribute('data-lang');
-            if (lang) switchLanguage(lang);
-        });
-    });
+    // 1. Language Setup (Default: EN, Saves choice in localStorage)
+    const savedLang = localStorage.getItem('preferred_lang') || 'en';
 
-    // أزرار الأقسام
-    document.querySelectorAll('.category-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-            currentCategory = e.target.getAttribute('data-category') || 'all';
-            renderNews();
-        });
-    });
+    const translations = {
+        en: {
+            siteTitle: "Tchad24News",
+            tickerTitle: "BREAKING",
+            tickerContent: "Security measures reinforced in Chari-Baguirmi... New investments in regional infrastructure...",
+            catChad: "🇹🇩 Chad",
+            catAfrica: "🌍 Africa",
+            catWorld: "🌐 World",
+            catOpinion: "✍️ Opinion Articles",
+            publishTitle: "Publish Your Article",
+            authorImgLabel: "Author Profile Picture:",
+            authorNamePlaceholder: "Author Name",
+            articleTitlePlaceholder: "Article Title",
+            articleContentPlaceholder: "Write your article here...",
+            publishBtn: "Publish Article",
+            adminLoginBtn: "🔐 Admin Login",
+            publishTabBtn: "✍️ Publish Article"
+        },
+        fr: {
+            siteTitle: "Tchad24News",
+            tickerTitle: "URGENT",
+            tickerContent: "Renforcement de la sécurité dans le Chari-Baguirmi... Nouveaux investissements dans les infrastructures...",
+            catChad: "🇹🇩 Tchad",
+            catAfrica: "🌍 Afrique",
+            catWorld: "🌐 Monde",
+            catOpinion: "✍️ Articles d'opinion",
+            publishTitle: "Publiez votre article",
+            authorImgLabel: "Photo de profil de l'auteur:",
+            authorNamePlaceholder: "Nom de l'auteur",
+            articleTitlePlaceholder: "Titre de l'article",
+            articleContentPlaceholder: "Écrivez votre article ici...",
+            publishBtn: "Publier l'article",
+            adminLoginBtn: "🔐 Connexion Admin",
+            publishTabBtn: "✍️ Publier un article"
+        },
+        ar: {
+            siteTitle: "Tchad24News",
+            tickerTitle: "عاجل",
+            tickerContent: "تعزيز الأمن وتأمين المناطق الحدودية في تشاد... استثمارات جديدة في البنية التحتية...",
+            catChad: "🇹🇩 تشاد",
+            catAfrica: "🌍 إفريقيا",
+            catWorld: "🌐 العالم",
+            catOpinion: "✍️ مقالات الرأي",
+            publishTitle: "أنشر مقالتك",
+            authorImgLabel: "الصورة الشخصية للكاتب:",
+            authorNamePlaceholder: "اسم الكاتب",
+            articleTitlePlaceholder: "عنوان المقال",
+            articleContentPlaceholder: "اكتب مقالك هنا...",
+            publishBtn: "أنشر مقالتك",
+            adminLoginBtn: "🔐 دخول الأدمن",
+            publishTabBtn: "✍️ أنشر مقالتك"
+        }
+    };
 
-    // زر الوضع المظلم
-    const themeBtn = document.getElementById('theme-toggle');
-    if (themeBtn) {
-        themeBtn.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
+    function setLanguage(lang) {
+        localStorage.setItem('preferred_lang', lang);
+        document.documentElement.lang = lang;
+        document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.lang === lang);
+        });
+
+        const t = translations[lang] || translations.en;
+
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.dataset.i18n;
+            if (t[key]) el.textContent = t[key];
+        });
+
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.dataset.i18nPlaceholder;
+            if (t[key]) el.placeholder = t[key];
         });
     }
 
-    // التشغيل الافتراضي بالعربية
-    switchLanguage('ar');
+    // Language Toggle Listeners
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            setLanguage(btn.dataset.lang);
+        });
+    });
+
+    // 2. Navigation & Opinion Toggle Logic
+    const categoryBtns = document.querySelectorAll('.category-btn');
+    const opinionSection = document.getElementById('opinion-section');
+    const newsContainer = document.getElementById('news-container');
+
+    categoryBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            categoryBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const category = btn.dataset.category;
+            
+            // Show opinion section ONLY if opinion category is active
+            if (category === 'opinion') {
+                opinionSection.style.display = 'block';
+                newsContainer.style.display = 'none';
+            } else {
+                opinionSection.style.display = 'none';
+                newsContainer.style.display = 'grid';
+            }
+        });
+    });
+
+    // 3. Sub-tabs inside Opinion Section
+    const subTabBtns = document.querySelectorAll('.sub-tab-btn');
+    const publishForm = document.getElementById('publish-form-container');
+    const adminLogin = document.getElementById('admin-login-container');
+
+    subTabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            subTabBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const tab = btn.dataset.tab;
+            if (tab === 'publish') {
+                publishForm.style.display = 'block';
+                adminLogin.style.display = 'none';
+            } else if (tab === 'admin') {
+                publishForm.style.display = 'none';
+                adminLogin.style.display = 'block';
+            }
+        });
+    });
+
+    // Theme Switcher (Dark Mode)
+    const themeBtn = document.getElementById('theme-toggle');
+    themeBtn.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+    });
+
+    // Initialize Page Settings
+    setLanguage(savedLang);
 });
