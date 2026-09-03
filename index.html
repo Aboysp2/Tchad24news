@@ -7,8 +7,9 @@
   <meta name="description" content="Tchad24News - Actualités du Tchad en français, arabe et anglais" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Tchad24News" />
   <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="icon" href="icons/favicon.png" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <title>Tchad24News</title>
   <link rel="stylesheet" href="styles.css" />
@@ -27,7 +28,8 @@
           <button data-lang="ar" class="lang-btn">ع</button>
           <button data-lang="en" class="lang-btn">EN</button>
         </div>
-        <button id="themeBtn" class="icon-btn" title="Theme">🇹🇩</button>
+        <button id="themeBtn" class="icon-btn" title="Theme">🌙</button>
+        <button id="refreshBtn" class="icon-btn" title="Refresh">🔄</button>
       </div>
     </header>
 
@@ -52,9 +54,11 @@
   <script src="app.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js')
-        .then(() => console.log('Service Worker registered'))
-        .catch(err => console.log('SW registration failed', err));
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(() => console.log('Service Worker registered'))
+          .catch(err => console.log('SW registration failed', err));
+      });
     }
   </script>
 </body>
