@@ -1,4 +1,4 @@
-const CACHE_NAME = "tchadnews-v1";
+const CACHE_NAME = "tchadnews-v2";
 const ASSETS = [
   "./",
   "./index.html",
@@ -7,6 +7,7 @@ const ASSETS = [
   "./manifest.json",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
+  "./icons/favicon.png",
 ];
 
 self.addEventListener("install", (event) => {
@@ -28,23 +29,32 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const url = event.request.url;
 
-  if (url.includes("allorigins") || url.includes("feed") || url.includes("rss")) {
-    event.respondWith(
-      fetch(event.request).catch(() => caches.match(event.request))
-    );
+  // Always go to the network for RSS proxies and translation calls; never cache these.
+  if (
+    url.includes("allorigins") ||
+    url.includes("corsproxy") ||
+    url.includes("codetabs") ||
+    url.includes("mymemory") ||
+    url.includes("feed") ||
+    url.includes("rss")
+  ) {
+    event.respondWith(fetch(event.request).catch(() => new Response("", { status: 504 })));
     return;
   }
 
+  // App shell: cache-first, falling back to network, then updating the cache.
   event.respondWith(
     caches.match(event.request).then((cached) => {
-      return (
-        cached ||
-        fetch(event.request).then((response) => {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+      const networkFetch = fetch(event.request)
+        .then((response) => {
+          if (response && response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
           return response;
         })
-      );
+        .catch(() => cached);
+      return cached || networkFetch;
     })
   );
 });
