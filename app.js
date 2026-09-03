@@ -1,7 +1,7 @@
 // ========== Translations ==========
 const T = {
   fr: {
-    appName: "TchadNews",
+    appName: "Tchad24news",
     breaking: "DERNIÈRE HEURE",
     all: "Tous",
     politics: "Politique",
@@ -22,7 +22,7 @@ const T = {
     hAgo: "il y a {n} h",
   },
   ar: {
-    appName: "تشاد نيوز",
+    appName: "تنيوز",
     breaking: "عاجل",
     all: "الكل",
     politics: "سياسة",
@@ -43,7 +43,7 @@ const T = {
     hAgo: "منذ {n} س",
   },
   en: {
-    appName: "TchadNews",
+    appName: "Tnews",
     breaking: "BREAKING",
     all: "All",
     politics: "Politics",
@@ -78,10 +78,11 @@ const CATEGORIES = [
 ];
 
 // ========== State ==========
-let lang = localStorage.getItem("tn_lang") || "fr";
+let lang = localStorage.getItem("tn_lang") || "ar";
 let theme = localStorage.getItem("tn_theme") || "system";
 let stories = [];
 let activeCat = "all";
+let isLoading = false;
 
 // ========== RSS Sources ==========
 const SOURCES = [
@@ -90,22 +91,29 @@ const SOURCES = [
   { name: "Journal du Tchad", url: "https://journaldutchad.com/feed/" },
 ];
 
-// ========== Helpers ==========
 function t(key) {
   return (T[lang] && T[lang][key]) || T.fr[key] || key;
 }
 
 function applyLang() {
+  const isRTL = lang === "ar";
   document.documentElement.lang = lang;
-  document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
-  document.getElementById("appName").textContent = t("appName");
-  document.getElementById("breakingLabel").textContent = t("breaking");
-  document.getElementById("offlineBar").textContent = t("offline");
+  document.documentElement.dir = isRTL ? "rtl" : "ltr";
+
+  const nameEl = document.getElementById("appName");
+  if (nameEl) nameEl.textContent = t("appName");
+
+  const breakLabel = document.getElementById("breakingLabel");
+  if (breakLabel) breakLabel.textContent = t("breaking");
+
+  const offline = document.getElementById("offlineBar");
+  if (offline) offline.textContent = t("offline");
 
   document.querySelectorAll(".lang-btn").forEach((btn) => {
     btn.classList.toggle("active", btn.dataset.lang === lang);
   });
 
+  document.title = t("appName");
   renderCategories();
   renderNews();
 }
@@ -115,7 +123,8 @@ function applyTheme() {
     theme === "dark" ||
     (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
   document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
-  document.getElementById("themeBtn").textContent = isDark ? "☀️" : "🌙";
+  const btn = document.getElementById("themeBtn");
+  if (btn) btn.textContent = isDark ? "☀️" : "🌙";
 }
 
 function relativeTime(iso) {
@@ -126,25 +135,25 @@ function relativeTime(iso) {
   if (mins < 60) return t("minAgo").replace("{n}", mins);
   const hours = Math.floor(mins / 60);
   if (hours < 24) return t("hAgo").replace("{n}", hours);
-  return new Date(iso).toLocaleDateString();
+  return new Date(iso).toLocaleDateString(lang === "ar" ? "ar" : lang);
 }
 
 function guessCategory(text) {
   const s = (text || "").toLowerCase();
-  if (/politiqu|gouvernement|président|ministre|élection/.test(s)) return "politics";
-  if (/économ|financ|budget|pétrole|banque/.test(s)) return "economy";
-  if (/sécurit|armée|attaque|terror|boko|militaire/.test(s)) return "security";
-  if (/santé|hôpital|épidémie|choléra|vaccin/.test(s)) return "health";
-  if (/sport|football|match|équipe/.test(s)) return "sport";
-  if (/culture|art|musique|festival/.test(s)) return "culture";
-  if (/international|france|soudan|onu|afrique/.test(s)) return "international";
+  if (/politiqu|gouvernement|président|ministre|élection|assemblée|parti/.test(s)) return "politics";
+  if (/économ|financ|budget|pétrole|banque|marché|commerce/.test(s)) return "economy";
+  if (/sécurit|armée|attaque|terror|boko|militaire|défense/.test(s)) return "security";
+  if (/santé|hôpital|épidémie|choléra|vaccin|médecin/.test(s)) return "health";
+  if (/sport|football|match|équipe|champion/.test(s)) return "sport";
+  if (/culture|art|musique|festival|cinéma/.test(s)) return "culture";
+  if (/international|france|soudan|onu|afrique|niger|mali/.test(s)) return "international";
   return "society";
 }
 
 function decode(html) {
   const txt = document.createElement("textarea");
   txt.innerHTML = html || "";
-  return txt.value.replace(/<[^>]+>/g, " ").trim();
+  return txt.value.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 }
 
 function parseRSS(xml, sourceName) {
@@ -161,8 +170,14 @@ function parseRSS(xml, sourceName) {
       const desc = node.querySelector("description")?.textContent || "";
       const pub = node.querySelector("pubDate")?.textContent;
       let image = null;
-      const media = node.querySelector("media\\:content, content");
-      if (media) image = media.getAttribute("url");
+      const enclosure = node.querySelector("enclosure");
+      if (enclosure && enclosure.getAttribute("type")?.startsWith("image")) {
+        image = enclosure.getAttribute("url");
+      }
+      if (!image) {
+        const media = node.getElementsByTagName("media:content")[0];
+        if (media) image = media.getAttribute("url");
+      }
       if (!image) {
         const m = desc.match(/src=["']([^"']+)["']/i);
         if (m) image = m[1];
@@ -171,7 +186,7 @@ function parseRSS(xml, sourceName) {
         items.push({
           id: link,
           title: decode(title),
-          description: decode(desc).slice(0, 200),
+          description: decode(desc).slice(0, 180),
           url: link,
           image,
           source: sourceName,
@@ -186,17 +201,22 @@ function parseRSS(xml, sourceName) {
   return items;
 }
 
-// ========== Fetch News ==========
 async function fetchNews() {
+  if (isLoading) return;
+  isLoading = true;
+
   const list = document.getElementById("newsList");
   list.innerHTML = `<div class="loading">${t("loading")}</div>`;
   document.getElementById("offlineBar").classList.add("hidden");
 
   let all = [];
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
+
   const promises = SOURCES.map(async (src) => {
     try {
       const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(src.url)}`;
-      const res = await fetch(proxy, { signal: AbortSignal.timeout(12000) });
+      const res = await fetch(proxy, { signal: controller.signal });
       if (!res.ok) throw new Error(res.status);
       const xml = await res.text();
       return parseRSS(xml, src.name);
@@ -206,16 +226,20 @@ async function fetchNews() {
     }
   });
 
-  const results = await Promise.allSettled(promises);
-  results.forEach((r) => {
-    if (r.status === "fulfilled") all = all.concat(r.value);
-  });
+  try {
+    const results = await Promise.allSettled(promises);
+    clearTimeout(timeout);
+    results.forEach((r) => {
+      if (r.status === "fulfilled") all = all.concat(r.value);
+    });
+  } catch (e) {
+    clearTimeout(timeout);
+  }
 
-  // Dedup
   const seen = new Set();
   const unique = [];
   all.forEach((item) => {
-    const key = item.title.toLowerCase().slice(0, 50);
+    const key = item.title.toLowerCase().replace(/[^\w\u0600-\u06FF]/g, "").slice(0, 40);
     if (!seen.has(key)) {
       seen.add(key);
       unique.push(item);
@@ -226,24 +250,32 @@ async function fetchNews() {
 
   if (unique.length > 0) {
     stories = unique;
-    localStorage.setItem("tn_cache", JSON.stringify(unique));
-    localStorage.setItem("tn_cache_time", Date.now().toString());
+    try {
+      localStorage.setItem("tn_cache", JSON.stringify(unique.slice(0, 60)));
+      localStorage.setItem("tn_cache_time", Date.now().toString());
+    } catch (e) {}
     renderNews();
   } else {
-    const cache = localStorage.getItem("tn_cache");
-    if (cache) {
-      stories = JSON.parse(cache);
-      document.getElementById("offlineBar").classList.remove("hidden");
-      renderNews();
-    } else {
-      list.innerHTML = `<div class="error">${t("error")}<br><button onclick="fetchNews()" style="margin-top:12px;padding:8px 16px;background:var(--primary);color:white;border:none;border-radius:8px;cursor:pointer">${t("retry")}</button></div>`;
+    try {
+      const cache = localStorage.getItem("tn_cache");
+      if (cache) {
+        stories = JSON.parse(cache);
+        document.getElementById("offlineBar").classList.remove("hidden");
+        renderNews();
+      } else {
+        list.innerHTML = `<div class="error">${t("error")}<br>
+          <button onclick="fetchNews()" style="margin-top:12px;padding:8px 18px;background:var(--primary);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer">${t("retry")}</button></div>`;
+      }
+    } catch (e) {
+      list.innerHTML = `<div class="error">${t("error")}</div>`;
     }
   }
+  isLoading = false;
 }
 
-// ========== Render ==========
 function renderCategories() {
   const el = document.getElementById("categories");
+  if (!el) return;
   el.innerHTML = CATEGORIES.map(
     (c) =>
       `<button class="cat-btn ${activeCat === c.id ? "active" : ""}" data-cat="${c.id}">${t(c.key)}</button>`
@@ -260,6 +292,8 @@ function renderCategories() {
 
 function renderNews() {
   const list = document.getElementById("newsList");
+  if (!list) return;
+
   let data = activeCat === "all" ? stories : stories.filter((s) => s.category === activeCat);
 
   const breaking = document.getElementById("breaking");
@@ -297,26 +331,32 @@ function renderNews() {
     .join("");
 }
 
-// ========== Events ==========
-document.querySelectorAll(".lang-btn").forEach((btn) => {
-  btn.onclick = () => {
-    lang = btn.dataset.lang;
-    localStorage.setItem("tn_lang", lang);
-    applyLang();
-  };
+function setupEvents() {
+  document.querySelectorAll(".lang-btn").forEach((btn) => {
+    btn.onclick = () => {
+      lang = btn.dataset.lang;
+      localStorage.setItem("tn_lang", lang);
+      applyLang();
+    };
+  });
+
+  const themeBtn = document.getElementById("themeBtn");
+  if (themeBtn) {
+    themeBtn.onclick = () => {
+      const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+      theme = isDark ? "light" : "dark";
+      localStorage.setItem("tn_theme", theme);
+      applyTheme();
+    };
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  setupEvents();
+  applyTheme();
+  applyLang();
+  fetchNews();
 });
 
-document.getElementById("themeBtn").onclick = () => {
-  const isDark = document.documentElement.getAttribute("data-theme") === "dark";
-  theme = isDark ? "light" : "dark";
-  localStorage.setItem("tn_theme", theme);
-  applyTheme();
-};
+setInterval(fetchNews, 12 * 60 * 1000);
 
-// ========== Init ==========
-applyTheme();
-applyLang();
-fetchNews();
-
-// Auto refresh every 10 minutes
-setInterval(fetchNews, 10 * 60 * 1000);
