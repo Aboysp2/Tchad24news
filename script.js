@@ -2,6 +2,58 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Language Setup (Default: EN, Saves choice in localStorage)
     const savedLang = localStorage.getItem('preferred_lang') || 'en';
 
+    // Mock Sample News Data
+    const newsData = {
+        chad: [
+            {
+                category: "Chad",
+                title: {
+                    en: "Security Measures Reinforced in Chari-Baguirmi",
+                    fr: "Renforcement de la sécurité dans le Chari-Baguirmi",
+                    ar: "تعزيز الأمن وتأمين المناطق الحدودية في تشاد"
+                },
+                desc: {
+                    en: "Local authorities take new steps to ensure safety across the region.",
+                    fr: "Les autorités locales prennent de nouvelles mesures pour sécuriser la région.",
+                    ar: "اتخذت السلطات المحلية إجراءات جديدة لتعزيز الأمن والاستقرار."
+                },
+                time: { en: "2 hours ago", fr: "Il y a 2h", ar: "قبل ساعتين" }
+            }
+        ],
+        africa: [
+            {
+                category: "Africa",
+                title: {
+                    en: "African Union Summit Discusses Regional Trade",
+                    fr: "Le sommet de l'Union africaine discute du commerce régional",
+                    ar: "قمة الاتحاد الإفريقي تناقش تعزيز التجارة البينية"
+                },
+                desc: {
+                    en: "Leaders gather to facilitate cross-border economic growth.",
+                    fr: "Les dirigeants se réunissent pour faciliter la croissance économique.",
+                    ar: "اجتماع القادة لبحث سبل تسريع النمو الاقتصادي في القارة."
+                },
+                time: { en: "5 hours ago", fr: "Il y a 5h", ar: "قبل 5 ساعات" }
+            }
+        ],
+        world: [
+            {
+                category: "World",
+                title: {
+                    en: "Global Energy Forum Announces Green Initiatives",
+                    fr: "Le Forum mondial de l'énergie annonce des initiatives vertes",
+                    ar: "المنتدى العالمي للطاقة يعلن عن مبادرات بيئية جديدة"
+                },
+                desc: {
+                    en: "New investments targeted toward renewable energy adoption globally.",
+                    fr: "Nouveaux investissements ciblés vers les énergies renouvelables.",
+                    ar: "استثمارات جديدة تستهدف تسريع التحول نحو الطاقة المتجددة."
+                },
+                time: { en: "1 day ago", fr: "Il y a 1 jour", ar: "قبل يوم واحد" }
+            }
+        ]
+    };
+
     const translations = {
         en: {
             siteTitle: "Tchad24News",
@@ -56,6 +108,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Render News Dynamic Function
+    function renderNews(category) {
+        const newsContainer = document.getElementById('news-container');
+        if (!newsContainer) return;
+
+        const currentLang = localStorage.getItem('preferred_lang') || 'en';
+        const items = newsData[category] || [];
+
+        newsContainer.innerHTML = items.map(item => `
+            <article class="news-card">
+                <div>
+                    <span class="category-badge">${item.category}</span>
+                    <h3>${item.title[currentLang] || item.title.en}</h3>
+                    <p>${item.desc[currentLang] || item.desc.en}</p>
+                </div>
+                <span class="news-date">${item.time[currentLang] || item.time.en}</span>
+            </article>
+        `).join('');
+    }
+
     function setLanguage(lang) {
         localStorage.setItem('preferred_lang', lang);
         document.documentElement.lang = lang;
@@ -76,6 +148,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const key = el.dataset.i18nPlaceholder;
             if (t[key]) el.placeholder = t[key];
         });
+
+        // Re-render current category news with updated language
+        const activeCategory = document.querySelector('.category-btn.active')?.dataset.category || 'chad';
+        if (activeCategory !== 'opinion') {
+            renderNews(activeCategory);
+        }
     }
 
     // Language Toggle Listeners
@@ -97,13 +175,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const category = btn.dataset.category;
             
-            // Show opinion section ONLY if opinion category is active
             if (category === 'opinion') {
                 opinionSection.style.display = 'block';
                 newsContainer.style.display = 'none';
             } else {
                 opinionSection.style.display = 'none';
                 newsContainer.style.display = 'grid';
+                renderNews(category);
             }
         });
     });
@@ -131,10 +209,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Theme Switcher (Dark Mode)
     const themeBtn = document.getElementById('theme-toggle');
-    themeBtn.addEventListener('click', () => {
-        document.body.classList.toggle('dark-mode');
-    });
+    if (themeBtn) {
+        themeBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+        });
+    }
 
-    // Initialize Page Settings
+    // Initialize Page Settings & Initial News Display
     setLanguage(savedLang);
+    renderNews('chad');
 });
