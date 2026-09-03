@@ -1,7 +1,7 @@
-// ========== Translations ==========
+// ========== Translations (UI strings) ==========
 const T = {
   fr: {
-    appName: "Tchad24news",
+    appName: "Tchad24News",
     breaking: "DERNIÈRE HEURE",
     all: "Tous",
     politics: "Politique",
@@ -43,7 +43,7 @@ const T = {
     hAgo: "منذ {n} س",
   },
   en: {
-    appName: "Tnews",
+    appName: "Tchad24News",
     breaking: "BREAKING",
     all: "All",
     politics: "Politics",
@@ -78,17 +78,28 @@ const CATEGORIES = [
 ];
 
 // ========== State ==========
-let lang = localStorage.getItem("tn_lang") || "ar";
+let lang = localStorage.getItem("tn_lang") || "fr";
 let theme = localStorage.getItem("tn_theme") || "system";
-let stories = [];
+let stories = [];        // always stored in original (source) language: French
 let activeCat = "all";
 let isLoading = false;
+let translationCache = loadTranslationCache(); // { "ar:<id>:title": "...", ... }
+const inFlightTranslations = new Set();
 
-// ========== RSS Sources ==========
+// ========== RSS Sources (all publish in French) ==========
+const SOURCE_LANG = "fr";
 const SOURCES = [
   { name: "Tchadinfos", url: "https://tchadinfos.com/feed/" },
   { name: "Alwihda Info", url: "https://www.alwihdainfo.com/rss/" },
   { name: "Journal du Tchad", url: "https://journaldutchad.com/feed/" },
+];
+
+// CORS proxies tried in a race — whichever answers first wins, which keeps
+// things fast even if one proxy is slow or temporarily down.
+const PROXIES = [
+  (u) => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+  (u) => `https://corsproxy.io/?url=${encodeURIComponent(u)}`,
+  (u) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
 ];
 
 function t(key) {
@@ -161,6 +172,7 @@ function parseRSS(xml, sourceName) {
   try {
     const parser = new DOMParser();
     const doc = parser.parseFromString(xml, "text/xml");
+    if (doc.querySelector("parsererror")) return items;
     const nodes = doc.querySelectorAll("item");
     nodes.forEach((node) => {
       const title = node.querySelector("title")?.textContent?.trim();
@@ -183,8 +195,9 @@ function parseRSS(xml, sourceName) {
         if (m) image = m[1];
       }
       if (title && link) {
+        const id = link;
         items.push({
-          id: link,
+          id,
           title: decode(title),
           description: decode(desc).slice(0, 180),
           url: link,
@@ -201,40 +214,55 @@ function parseRSS(xml, sourceName) {
   return items;
 }
 
+// Races all proxies for one URL, returns the first successful response text.
+function fetchViaProxyRace(url, timeoutMs = 9000) {
+  const attempts = PROXIES.map((buildUrl) => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    return fetch(buildUrl(url), { signal: controller.signal })
+      .then((res) => {
+        clearTimeout(timer);
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.text();
+      })
+      .then((text) => {
+        if (!text || text.length < 50) throw new Error("empty response");
+        return text;
+      })
+      .catch((err) => {
+        clearTimeout(timer);
+        throw err;
+      });
+  });
+  return Promise.any(attempts);
+}
+
 async function fetchNews() {
   if (isLoading) return;
   isLoading = true;
+  setRefreshSpinning(true);
 
   const list = document.getElementById("newsList");
-  list.innerHTML = `<div class="loading">${t("loading")}</div>`;
+  if (stories.length === 0) {
+    list.innerHTML = `<div class="loading"><div class="spinner"></div>${t("loading")}</div>`;
+  }
   document.getElementById("offlineBar").classList.add("hidden");
-
-  let all = [];
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15000);
 
   const promises = SOURCES.map(async (src) => {
     try {
-      const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(src.url)}`;
-      const res = await fetch(proxy, { signal: controller.signal });
-      if (!res.ok) throw new Error(res.status);
-      const xml = await res.text();
+      const xml = await fetchViaProxyRace(src.url);
       return parseRSS(xml, src.name);
     } catch (e) {
-      console.warn("Failed", src.name, e.message);
+      console.warn("Failed", src.name, e && e.message);
       return [];
     }
   });
 
-  try {
-    const results = await Promise.allSettled(promises);
-    clearTimeout(timeout);
-    results.forEach((r) => {
-      if (r.status === "fulfilled") all = all.concat(r.value);
-    });
-  } catch (e) {
-    clearTimeout(timeout);
-  }
+  const results = await Promise.allSettled(promises);
+  let all = [];
+  results.forEach((r) => {
+    if (r.status === "fulfilled") all = all.concat(r.value);
+  });
 
   const seen = new Set();
   const unique = [];
@@ -251,11 +279,11 @@ async function fetchNews() {
   if (unique.length > 0) {
     stories = unique;
     try {
-      localStorage.setItem("tn_cache", JSON.stringify(unique.slice(0, 60)));
+      localStorage.setItem("tn_cache", JSON.stringify(unique.slice(0, 80)));
       localStorage.setItem("tn_cache_time", Date.now().toString());
     } catch (e) {}
     renderNews();
-  } else {
+  } else if (stories.length === 0) {
     try {
       const cache = localStorage.getItem("tn_cache");
       if (cache) {
@@ -271,6 +299,116 @@ async function fetchNews() {
     }
   }
   isLoading = false;
+  setRefreshSpinning(false);
+}
+
+function setRefreshSpinning(spinning) {
+  const btn = document.getElementById("refreshBtn");
+  if (btn) btn.classList.toggle("spinning", spinning);
+}
+
+// ========== Live translation of news content (MyMemory API) ==========
+function loadTranslationCache() {
+  try {
+    const raw = localStorage.getItem("tn_translations");
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveTranslationCache() {
+  try {
+    // Keep the cache from growing forever.
+    const keys = Object.keys(translationCache);
+    if (keys.length > 1500) {
+      const trimmed = {};
+      keys.slice(keys.length - 1200).forEach((k) => (trimmed[k] = translationCache[k]));
+      translationCache = trimmed;
+    }
+    localStorage.setItem("tn_translations", JSON.stringify(translationCache));
+  } catch (e) {}
+}
+
+async function translateOne(text, targetLang) {
+  if (!text) return text;
+  const res = await fetch(
+    `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${SOURCE_LANG}|${targetLang}`
+  );
+  if (!res.ok) throw new Error("HTTP " + res.status);
+  const data = await res.json();
+  const translated = data?.responseData?.translatedText;
+  if (!translated || /INVALID|MYMEMORY WARNING/i.test(translated)) {
+    throw new Error("bad translation");
+  }
+  return translated;
+}
+
+// Translates title+description for one story and updates the DOM/cache in place.
+async function translateStoryIntoView(item) {
+  if (lang === SOURCE_LANG) return; // nothing to do, source is already French
+  const titleKey = `${lang}:${item.id}:title`;
+  const descKey = `${lang}:${item.id}:desc`;
+  const card = document.querySelector(`.card[data-id="${cssEscape(item.id)}"]`);
+
+  if (translationCache[titleKey] && translationCache[descKey]) {
+    if (card) {
+      card.querySelector(".card-title").textContent = translationCache[titleKey];
+      const d = card.querySelector(".card-desc");
+      if (d) d.textContent = translationCache[descKey];
+    }
+    return;
+  }
+
+  const jobKey = titleKey;
+  if (inFlightTranslations.has(jobKey)) return;
+  inFlightTranslations.add(jobKey);
+  if (card) card.classList.add("translating");
+
+  try {
+    const [title, desc] = await Promise.all([
+      translateOne(item.title, lang),
+      item.description ? translateOne(item.description, lang) : Promise.resolve(""),
+    ]);
+    translationCache[titleKey] = title;
+    translationCache[descKey] = desc;
+    saveTranslationCache();
+
+    const stillActiveCard = document.querySelector(`.card[data-id="${cssEscape(item.id)}"]`);
+    if (stillActiveCard && lang !== SOURCE_LANG) {
+      stillActiveCard.querySelector(".card-title").textContent = title;
+      const d = stillActiveCard.querySelector(".card-desc");
+      if (d) d.textContent = desc;
+    }
+  } catch (e) {
+    console.warn("Translation failed for", item.id, e && e.message);
+  } finally {
+    inFlightTranslations.delete(jobKey);
+    if (card) card.classList.remove("translating");
+  }
+}
+
+// Translates the currently visible batch with limited concurrency so the UI stays fast.
+function translateVisible(items) {
+  if (lang === SOURCE_LANG) return;
+  const CONCURRENCY = 4;
+  let idx = 0;
+  function next() {
+    if (idx >= items.length) return;
+    const item = items[idx++];
+    translateStoryIntoView(item).finally(next);
+  }
+  for (let i = 0; i < CONCURRENCY; i++) next();
+}
+
+function cssEscape(str) {
+  return String(str).replace(/["\\]/g, "\\$&");
+}
+
+function displayTextFor(item, field) {
+  if (lang === SOURCE_LANG) return item[field];
+  const key = `${lang}:${item.id}:${field === "title" ? "title" : "desc"}`;
+  return translationCache[key] || item[field];
 }
 
 function renderCategories() {
@@ -298,7 +436,7 @@ function renderNews() {
 
   const breaking = document.getElementById("breaking");
   if (stories.length > 0) {
-    document.getElementById("breakingTitle").textContent = stories[0].title;
+    document.getElementById("breakingTitle").textContent = displayTextFor(stories[0], "title");
     breaking.classList.remove("hidden");
   } else {
     breaking.classList.add("hidden");
@@ -312,15 +450,15 @@ function renderNews() {
   list.innerHTML = data
     .map(
       (item) => `
-    <a class="card" href="${item.url}" target="_blank" rel="noopener">
+    <a class="card" data-id="${cssEscape(item.id)}" href="${item.url}" target="_blank" rel="noopener">
       ${
         item.image
           ? `<img class="card-img" src="${item.image}" alt="" loading="lazy" onerror="this.outerHTML='<div class=\\'card-img\\'>🇹🇩</div>'" />`
           : `<div class="card-img">🇹🇩</div>`
       }
       <div class="card-body">
-        <div class="card-title">${item.title}</div>
-        ${item.description ? `<div class="card-desc">${item.description}</div>` : ""}
+        <div class="card-title">${displayTextFor(item, "title")}</div>
+        ${item.description ? `<div class="card-desc">${displayTextFor(item, "desc")}</div>` : ""}
         <div class="card-meta">
           <span class="card-source">${item.source}</span>
           <span class="card-time">${relativeTime(item.publishedAt)}</span>
@@ -329,6 +467,15 @@ function renderNews() {
     </a>`
     )
     .join("");
+
+  // Translate the currently visible cards + the breaking headline in the background.
+  translateVisible(data.slice(0, 40));
+  if (stories.length > 0) translateStoryIntoView(stories[0]).then(() => {
+    if (lang !== SOURCE_LANG) {
+      const key = `${lang}:${stories[0].id}:title`;
+      if (translationCache[key]) document.getElementById("breakingTitle").textContent = translationCache[key];
+    }
+  });
 }
 
 function setupEvents() {
@@ -349,14 +496,25 @@ function setupEvents() {
       applyTheme();
     };
   }
+
+  const refreshBtn = document.getElementById("refreshBtn");
+  if (refreshBtn) {
+    refreshBtn.onclick = () => fetchNews();
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   setupEvents();
   applyTheme();
+
+  // Show cached stories instantly (fast first paint) while a fresh fetch runs in background.
+  try {
+    const cache = localStorage.getItem("tn_cache");
+    if (cache) stories = JSON.parse(cache);
+  } catch (e) {}
+
   applyLang();
   fetchNews();
 });
 
 setInterval(fetchNews, 12 * 60 * 1000);
-
