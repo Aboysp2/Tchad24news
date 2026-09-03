@@ -16,6 +16,9 @@
         </div>
         
         <div class="header-controls">
+            <!-- Notifications Toggle Button -->
+            <button id="notify-toggle" class="icon-btn" title="Notifications">🔔</button>
+
             <!-- Language Selector -->
             <div class="lang-switch">
                 <button class="lang-btn" data-lang="ar">ع</button>
@@ -37,12 +40,12 @@
         </div>
     </div>
 
-    <!-- Main Categories Bar (Updated Order) -->
+    <!-- Main Categories Bar -->
     <nav class="categories-nav">
         <button class="category-btn active" data-category="chad" data-i18n="catChad">🇹🇩 Chad</button>
         <button class="category-btn" data-category="africa" data-i18n="catAfrica">🌍 Africa</button>
         <button class="category-btn" data-category="world" data-i18n="catWorld">🌐 World</button>
-        <button class="category-btn" data-category="sports" data-i18n="catSports">⚽ Sports</button>
+        <button class="category-btn" data-category="sports" data-i18n="catSports">⚽ Football</button>
         <button class="category-btn" data-category="press" data-i18n="catPress">📰 Newspapers</button>
         <button class="category-btn" data-category="opinion" data-i18n="catOpinion">✍️ Opinion Articles</button>
     </nav>
@@ -56,8 +59,6 @@
 
         <!-- Opinion Articles & Publishing Area -->
         <section id="opinion-section" style="display: none;">
-            
-            <!-- Opinion Inner Sub-Tabs -->
             <div class="sub-tabs">
                 <button class="sub-tab-btn active" data-tab="publish" data-i18n="publishTabBtn">✍️ Publish Article</button>
                 <button class="sub-tab-btn" data-tab="admin" data-i18n="adminLoginBtn">🔐 Admin Login</button>
@@ -102,9 +103,7 @@
 
             <!-- Published Opinion Articles List -->
             <h2 data-i18n="opinionListTitle" style="margin-top: 30px;">Published Articles</h2>
-            <div id="opinion-articles-list" class="news-grid">
-                <!-- User submitted articles will go here -->
-            </div>
+            <div id="opinion-articles-list" class="news-grid"></div>
         </section>
     </main>
 
