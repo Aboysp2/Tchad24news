@@ -290,22 +290,6 @@ main {
     font-weight: 500;
 }
 
-/* Responsive Styles */
-@media (max-width: 600px) {
-    .main-header {
-        padding: 10px;
-    }
-
-    .logo-text {
-        font-size: 18px;
-    }
-
-    .news-grid,
-    #opinion-articles-list,
-    #news-container {
-        grid-template-columns: 1fr;
-    }
-}
 /* Sub-tabs Styling for Opinion Section */
 .sub-tabs {
     display: flex;
@@ -363,4 +347,21 @@ main {
     border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
+}
+
+/* Responsive Styles */
+@media (max-width: 600px) {
+    .main-header {
+        padding: 10px;
+    }
+
+    .logo-text {
+        font-size: 18px;
+    }
+
+    .news-grid,
+    #opinion-articles-list,
+    #news-container {
+        grid-template-columns: 1fr;
+    }
 }
