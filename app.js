@@ -22,7 +22,7 @@ const T = {
     hAgo: "il y a {n} h",
   },
   ar: {
-    appName: "تنيوز",
+    appName: "تشاد24نيوز",
     breaking: "عاجل",
     all: "الكل",
     politics: "سياسة",
