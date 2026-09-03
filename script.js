@@ -1,10 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     /* ======================================================================
-       0. Configuration & Feed Sources
+       0. Feeds Configuration (Football: European -> Arab -> African)
        ====================================================================== */
 
-    // مصادر تشاد بالترتيب المحدد بالضبط
     const CHAD_RSS_SOURCES = [
         { url: 'https://www.alwihdainfo.com/feed/', name: 'Alwihda Info' },
         { url: 'https://tchadinfos.com/feed/', name: 'Tchadinfos' },
@@ -31,12 +30,18 @@ document.addEventListener('DOMContentLoaded', () => {
         { url: 'https://www.france24.com/ar/rss', name: 'فرانس 24' }
     ];
 
+    // كرة القدم بالترتيب: الأوروبية -> العربية -> الأفريقية
     const SPORTS_RSS_SOURCES = [
-        { url: 'http://feeds.bbci.co.uk/sport/rss.xml', name: 'BBC Sport' },
-        { url: 'https://www.skysports.com/rss/12040', name: 'Sky Sports' },
-        { url: 'https://www.espn.com/espn/rss/news', name: 'ESPN' },
-        { url: 'https://www.kooora.com/rss.aspx', name: 'كوورة' },
-        { url: 'https://www.filgoal.com/rss/news', name: 'FilGoal' }
+        // European Football
+        { url: 'https://www.uefa.com/rssfeed/news/rss.xml', name: '🇪🇺 UEFA Football' },
+        { url: 'https://www.skysports.com/rss/12040', name: '🇪🇺 Sky Football' },
+        { url: 'http://feeds.bbci.co.uk/sport/football/rss.xml', name: '🇪🇺 BBC Football' },
+        // Arab Football
+        { url: 'https://www.kooora.com/rss.aspx', name: '🌙 كووورة عربية' },
+        { url: 'https://www.filgoal.com/rss/news', name: '🌙 في الجول' },
+        // African Football
+        { url: 'https://www.cafonline.com/rss/', name: '🌍 CAF Football' },
+        { url: 'https://www.kingfut.com/feed/', name: '🌍 African Football' }
     ];
 
     const PRESS_RSS_SOURCES = [
@@ -50,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const RSS2JSON_ENDPOINT = 'https://api.rss2json.com/v1/api.json?rss_url=';
     const OPINION_STORAGE_KEY = 'tchad24_opinion_articles_v1';
     const THEME_STORAGE_KEY = 'tchad24_theme';
+    const NOTIFY_STORAGE_KEY = 'tchad24_notify_enabled';
     const ADMIN_SESSION_KEY = 'tchad24_is_admin';
     const ADMIN_CREDENTIALS = { username: 'admin', password: 'tchad24' };
 
@@ -64,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
             catChad: "🇹🇩 Chad",
             catAfrica: "🌍 Africa",
             catWorld: "🌐 World",
-            catSports: "⚽ Sports",
+            catSports: "⚽ Football",
             catPress: "📰 Newspapers",
             catOpinion: "✍️ Opinion Articles",
             publishTitle: "Publish Your Article",
@@ -84,13 +90,11 @@ document.addEventListener('DOMContentLoaded', () => {
             emptyNewsText: "No news available right now.",
             emptyOpinionText: "No opinion articles published yet.",
             readMoreText: "Read more →",
-            publishSuccessText: "Your article was published.",
-            publishErrorText: "Please fill in all required fields.",
-            adminSuccessText: "Logged in as admin.",
-            adminErrorText: "Incorrect username or password.",
             deleteBtnText: "Delete",
             deleteConfirmText: "Delete this article?",
-            sourceLabel: "Source"
+            sourceLabel: "Source",
+            notificationsEnabled: "Breaking News Notifications Enabled!",
+            notificationsDisabled: "Notifications Disabled."
         },
         fr: {
             siteTitle: "Tchad24News",
@@ -98,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
             catChad: "🇹🇩 Tchad",
             catAfrica: "🌍 Afrique",
             catWorld: "🌐 Monde",
-            catSports: "⚽ Sports",
+            catSports: "⚽ Football",
             catPress: "📰 Journaux",
             catOpinion: "✍️ Articles d'opinion",
             publishTitle: "Publiez votre article",
@@ -118,13 +122,11 @@ document.addEventListener('DOMContentLoaded', () => {
             emptyNewsText: "Aucune actualité disponible pour le moment.",
             emptyOpinionText: "Aucun article d'opinion publié pour le moment.",
             readMoreText: "Lire la suite →",
-            publishSuccessText: "Votre article a été publié.",
-            publishErrorText: "Veuillez remplir tous les champs obligatoires.",
-            adminSuccessText: "Connecté en tant qu'administrateur.",
-            adminErrorText: "Nom d'utilisateur ou mot de passe incorrect.",
             deleteBtnText: "Supprimer",
             deleteConfirmText: "Supprimer cet article ?",
-            sourceLabel: "Source"
+            sourceLabel: "Source",
+            notificationsEnabled: "Notifications d'urgence activées !",
+            notificationsDisabled: "Notifications désactivées."
         },
         ar: {
             siteTitle: "تشاد24نيوز",
@@ -132,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
             catChad: "🇹🇩 تشاد",
             catAfrica: "🌍 إفريقيا",
             catWorld: "🌐 العالم",
-            catSports: "⚽ الرياضة",
+            catSports: "⚽ كرة القدم",
             catPress: "📰 صحف ومواقع",
             catOpinion: "✍️ مقالات الرأي",
             publishTitle: "أنشر مقالتك",
@@ -152,13 +154,11 @@ document.addEventListener('DOMContentLoaded', () => {
             emptyNewsText: "لا توجد أخبار متاحة حاليًا.",
             emptyOpinionText: "لم يُنشر أي مقال رأي بعد.",
             readMoreText: "اقرأ المزيد ←",
-            publishSuccessText: "تم نشر مقالتك.",
-            publishErrorText: "يرجى ملء جميع الحقول المطلوبة.",
-            adminSuccessText: "تم تسجيل الدخول كمسؤول.",
-            adminErrorText: "اسم المستخدم أو كلمة المرور غير صحيحة.",
             deleteBtnText: "حذف",
             deleteConfirmText: "هل تريد حذف هذا المقال؟",
-            sourceLabel: "المصدر"
+            sourceLabel: "المصدر",
+            notificationsEnabled: "تم تفعيل إشعارات الأخبار العاجلة!",
+            notificationsDisabled: "تم إلغاء تفعيل الإشعارات."
         }
     };
 
@@ -169,17 +169,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ======================================================================
-       2. State
+       2. State & DOM References
        ====================================================================== */
 
     const state = {
         activeCategory: 'chad',
-        opinionArticles: loadOpinionArticles()
+        opinionArticles: loadOpinionArticles(),
+        lastNotifiedNews: ''
     };
-
-    /* ======================================================================
-       3. DOM references
-       ====================================================================== */
 
     const newsContainer = document.getElementById('news-container');
     const opinionSection = document.getElementById('opinion-section');
@@ -190,17 +187,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const adminLogin = document.getElementById('admin-login-container');
     const articleForm = document.getElementById('article-form');
     const adminForm = document.getElementById('admin-form');
-    const publishMessage = document.getElementById('publish-message');
-    const adminMessage = document.getElementById('admin-message');
     const themeBtn = document.getElementById('theme-toggle');
+    const notifyBtn = document.getElementById('notify-toggle');
     const tickerContent = document.getElementById('ticker-content');
 
     /* ======================================================================
-       4. Auto-Translation Service
+       3. Translation Service
        ====================================================================== */
 
     async function translateText(text, targetLang) {
-        if (!text || targetLang === 'fr') return text; // Default RSS mostly French/English
+        if (!text || targetLang === 'fr') return text;
         try {
             const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`);
             const data = await res.json();
@@ -211,7 +207,52 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ======================================================================
-       5. i18n Logic
+       4. Notifications Toggle Feature
+       ====================================================================== */
+
+    function initNotifications() {
+        const isEnabled = localStorage.getItem(NOTIFY_STORAGE_KEY) === 'true';
+        if (notifyBtn) {
+            notifyBtn.classList.toggle('active', isEnabled);
+            notifyBtn.addEventListener('click', toggleNotifications);
+        }
+    }
+
+    async function toggleNotifications() {
+        if (!("Notification" in window)) {
+            alert("Your browser does not support web notifications.");
+            return;
+        }
+
+        const currentlyEnabled = localStorage.getItem(NOTIFY_STORAGE_KEY) === 'true';
+
+        if (!currentlyEnabled) {
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                localStorage.setItem(NOTIFY_STORAGE_KEY, 'true');
+                notifyBtn.classList.add('active');
+                new Notification(t('siteTitle'), { body: t('notificationsEnabled'), icon: '🇹🇩' });
+            }
+        } else {
+            localStorage.setItem(NOTIFY_STORAGE_KEY, 'false');
+            notifyBtn.classList.remove('active');
+            alert(t('notificationsDisabled'));
+        }
+    }
+
+    function triggerBreakingNewsNotification(title) {
+        const isEnabled = localStorage.getItem(NOTIFY_STORAGE_KEY) === 'true';
+        if (isEnabled && Notification.permission === 'granted' && title !== state.lastNotifiedNews) {
+            state.lastNotifiedNews = title;
+            new Notification(`${t('tickerTitle')}: ${t('siteTitle')}`, {
+                body: title,
+                icon: '🇹🇩'
+            });
+        }
+    }
+
+    /* ======================================================================
+       5. i18n & Theme
        ====================================================================== */
 
     function setLanguage(lang) {
@@ -245,10 +286,6 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
     });
 
-    /* ======================================================================
-       6. Theme
-       ====================================================================== */
-
     function applyTheme(theme) {
         document.body.classList.toggle('dark-mode', theme === 'dark');
     }
@@ -264,7 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ======================================================================
-       7. Category navigation
+       6. Category Navigation
        ====================================================================== */
 
     categoryBtns.forEach(btn => {
@@ -301,7 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ======================================================================
-       8. RSS Fetching, Rendering & Translation
+       7. News Fetch & Render
        ====================================================================== */
 
     function clearNode(node) {
@@ -361,10 +398,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (r.status === 'fulfilled') merged = merged.concat(r.value);
         });
 
-        merged.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+        if (categoryKey !== 'sports') {
+            merged.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+        }
         merged = merged.slice(0, 24);
 
-        // ترجمة الأخبار تلقائياً للغة المحددة
         if (currentLang !== 'fr') {
             merged = await Promise.all(merged.map(async item => ({
                 ...item,
@@ -427,7 +465,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ======================================================================
-       9. Dynamic Breaking News Ticker (Chad -> Africa -> World)
+       8. Dynamic Breaking News Ticker & Notifications Trigger
        ====================================================================== */
 
     async function loadTickerNews() {
@@ -449,13 +487,19 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             tickerContent.textContent = combinedText || t('siteTitle');
+
+            // إرسال إشعار للمستخدم بالخبر العاجل إذا كانت الخاصية مفعلة
+            if (headlineChad) {
+                const cleanHeadline = chadFeeds[0].title;
+                triggerBreakingNewsNotification(cleanHeadline);
+            }
         } catch (e) {
             tickerContent.textContent = t('siteTitle');
         }
     }
 
     /* ======================================================================
-       10. Opinion Articles & Forms Logic
+       9. Opinion Articles & Forms
        ====================================================================== */
 
     function loadOpinionArticles() {
@@ -584,8 +628,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ======================================================================
-       11. Init
+       10. Init
        ====================================================================== */
 
+    initNotifications();
     setLanguage(currentLang);
 });
