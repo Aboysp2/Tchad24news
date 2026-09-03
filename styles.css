@@ -1,7 +1,3 @@
-/* ==========================================================================
-   Tchad24News - General Styles & Theme Configurations
-   ========================================================================== */
-
 :root {
     --primary-color: #002b66;
     --accent-color: #d90429;
@@ -113,9 +109,14 @@ body {
     border-radius: 50%;
     cursor: pointer;
     font-size: 16px;
+    transition: background var(--transition-speed);
 }
 
-/* Ticker */
+.icon-btn.active {
+    background-color: #10b981;
+}
+
+/* Breaking News Ticker (Slower Animation: 45s) */
 .ticker-wrap {
     background-color: var(--accent-color);
     color: #ffffff;
@@ -149,13 +150,13 @@ body {
 [dir="rtl"] #ticker-content {
     display: inline-block;
     padding-left: 100%;
-    animation: marquee-rtl 30s linear infinite;
+    animation: marquee-rtl 45s linear infinite; /* جعل الشريط أبطأ بـ 45 ثانية */
 }
 
 [dir="ltr"] #ticker-content {
     display: inline-block;
     padding-right: 100%;
-    animation: marquee-ltr 30s linear infinite;
+    animation: marquee-ltr 45s linear infinite; /* جعل الشريط أبطأ بـ 45 ثانية */
 }
 
 .ticker-container:hover #ticker-content {
@@ -172,7 +173,7 @@ body {
     100% { transform: translateX(-100%); }
 }
 
-/* Navigation */
+/* Navigation & Categories */
 .categories-nav {
     background-color: var(--card-bg);
     border-bottom: 1px solid var(--border-color);
@@ -201,7 +202,7 @@ body {
     border-color: var(--primary-color);
 }
 
-/* Main Layout & Cards */
+/* Main Layout & News Cards */
 main {
     max-width: 1100px;
     margin: 20px auto;
@@ -364,9 +365,6 @@ main {
     font-size: 14px;
     font-weight: 600;
 }
-
-.form-message.success { color: #10b981; }
-.form-message.error { color: #ef4444; }
 
 .empty-state {
     grid-column: 1 / -1;
