@@ -1,4 +1,4 @@
-const CACHE_NAME = "tchadnews-v2";
+const CACHE_NAME = "tchadnews-v3";
 const ASSETS = [
   "./",
   "./index.html",
@@ -7,7 +7,7 @@ const ASSETS = [
   "./manifest.json",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
-  "./icons/favicon.png",
+  "./icons/favicon.png"
 ];
 
 self.addEventListener("install", (event) => {
@@ -26,35 +26,31 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
+// Stale-While-Revalidate Fast Strategy
 self.addEventListener("fetch", (event) => {
   const url = event.request.url;
 
-  // Always go to the network for RSS proxies and translation calls; never cache these.
-  if (
-    url.includes("allorigins") ||
-    url.includes("corsproxy") ||
-    url.includes("codetabs") ||
-    url.includes("mymemory") ||
-    url.includes("feed") ||
-    url.includes("rss")
-  ) {
-    event.respondWith(fetch(event.request).catch(() => new Response("", { status: 504 })));
+  // Direct fetch for live feeds with short timeout
+  if (url.includes("api.rss2json.com") || url.includes("translate")) {
+    event.respondWith(
+      fetch(event.request).catch(() => new Response("", { status: 504 }))
+    );
     return;
   }
 
-  // App shell: cache-first, falling back to network, then updating the cache.
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      const networkFetch = fetch(event.request)
-        .then((response) => {
-          if (response && response.ok) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-          }
-          return response;
-        })
-        .catch(() => cached);
-      return cached || networkFetch;
+    caches.match(event.request).then((cachedResponse) => {
+      const fetchPromise = fetch(event.request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+        }
+        return networkResponse;
+      }).catch(() => cachedResponse);
+
+      return cachedResponse || fetchPromise;
     })
   );
 });
