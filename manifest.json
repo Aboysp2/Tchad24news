@@ -1,6 +1,6 @@
 {
-  "name": "TchadNews",
-  "short_name": "TchadNews",
+  "name": "Tchad24News",
+  "short_name": "Tchad24News",
   "description": "Actualités du Tchad en français, arabe et anglais - أخبار تشاد",
   "start_url": "./index.html",
   "display": "standalone",
