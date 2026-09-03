@@ -1,31 +1,27 @@
 <!DOCTYPE html>
-<html lang="fr" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#002664" />
-  <meta name="description" content="Tchad24News - Actualités du Tchad en français, arabe et anglais" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Tchad24News" />
+  <meta name="description" content="تشاد24نيوز - الأخبار على مدار الساعة" />
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icons/favicon.png" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <title>Tchad24News</title>
+  <title>تشاد24نيوز</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div id="app">
-    <!-- Header -->
     <header class="header">
       <div class="logo">
         <span>🇹🇩</span>
-        <h1 id="appName">Tchad24News</h1>
+        <h1 id="appName">تشاد24نيوز</h1>
       </div>
       <div class="actions">
         <div class="lang-switch">
-          <button data-lang="fr" class="lang-btn active">FR</button>
-          <button data-lang="ar" class="lang-btn">ع</button>
+          <button data-lang="ar" class="lang-btn active">ع</button>
+          <button data-lang="fr" class="lang-btn">FR</button>
           <button data-lang="en" class="lang-btn">EN</button>
         </div>
         <button id="themeBtn" class="icon-btn" title="Theme">🌙</button>
@@ -33,21 +29,23 @@
       </div>
     </header>
 
-    <!-- Breaking Banner -->
     <div id="breaking" class="breaking hidden">
-      <span class="badge" id="breakingLabel">DERNIÈRE HEURE</span>
+      <span class="badge" id="breakingLabel">عاجل</span>
       <div class="marquee"><span id="breakingTitle"></span></div>
     </div>
 
-    <!-- Categories -->
-    <div class="categories" id="categories"></div>
+    <!-- Nav Categories -->
+    <nav class="categories" id="categories">
+      <button class="cat-btn active" data-cat="tchad">🇹🇩 تشاد</button>
+      <button class="cat-btn" data-cat="africa">🌍 إفريقيا</button>
+      <button class="cat-btn" data-cat="world">🌐 العالم</button>
+      <button class="cat-btn" data-cat="opinion">✍️ مقالات الرأي</button>
+    </nav>
 
-    <!-- Offline bar -->
-    <div id="offlineBar" class="offline-bar hidden">Mode hors ligne</div>
+    <div id="offlineBar" class="offline-bar hidden">وضع عدم الاتصال بالإنترنت</div>
 
-    <!-- News List -->
     <main id="newsList" class="news-list">
-      <div class="loading" id="loading">Chargement des actualités...</div>
+      <div class="loading" id="loading">جاري تحميل الأخبار بسرعة...</div>
     </main>
   </div>
 
@@ -56,8 +54,8 @@
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js')
-          .then(() => console.log('Service Worker registered'))
-          .catch(err => console.log('SW registration failed', err));
+          .then(() => console.log('SW Registered'))
+          .catch(err => console.log('SW Error', err));
       });
     }
   </script>
