@@ -1,95 +1,106 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tchad24News</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="manifest" href="manifest.json">
 </head>
 <body>
 
-    <!-- الهيدر العلوي -->
+    <!-- Header / Nav -->
     <header class="main-header">
         <div class="logo-container">
             <span class="flag-icon">🇹🇩</span>
-            <h1 class="logo-text">Tchad24News</h1>
+            <span class="logo-text" data-i18n="siteTitle">Tchad24News</span>
         </div>
+        
         <div class="header-controls">
+            <!-- Language Selector -->
             <div class="lang-switch">
-                <button class="lang-btn active" data-lang="ar" onclick="switchLanguage('ar')">ع</button>
-                <button class="lang-btn" data-lang="fr" onclick="switchLanguage('fr')">FR</button>
-                <button class="lang-btn" data-lang="en" onclick="switchLanguage('en')">EN</button>
+                <button class="lang-btn" data-lang="ar">ع</button>
+                <button class="lang-btn" data-lang="fr">FR</button>
+                <button class="lang-btn active" data-lang="en">EN</button>
             </div>
+            <!-- Dark Mode Switch -->
             <button id="theme-toggle" class="icon-btn">🌙</button>
         </div>
     </header>
 
-    <!-- الشريط العاجل -->
+    <!-- Breaking News Ticker -->
     <div class="ticker-wrap">
-        <div class="ticker-title" data-i18n="urgent">عاجل 🚨</div>
+        <div class="ticker-title" data-i18n="tickerTitle">BREAKING</div>
         <div class="ticker-container">
-            <div class="ticker-content" id="ticker-content">
-                <span>La province du Moyen-Chari renforce son dispositif face aux urgences /// 🇹🇩 Haj 2027 : l'ORGEP annonce le lancement des préparatifs /// 🌍 Cairo hails visit by China's Xi</span>
+            <div id="ticker-content" data-i18n="tickerContent">
+                Security measures reinforced in Chari-Baguirmi... New infrastructure projects announced...
             </div>
         </div>
     </div>
 
-    <!-- شريط أقسام الأخبار -->
+    <!-- Main Categories Bar -->
     <nav class="categories-nav">
-        <button class="cat-btn active" data-category="tchad" data-i18n="cat_tchad">🇹🇩 تشاد</button>
-        <button class="cat-btn" data-category="africa" data-i18n="cat_africa">🌍 إفريقيا</button>
-        <button class="cat-btn" data-category="world" data-i18n="cat_world">🌐 العالم</button>
-        <button class="cat-btn" data-category="opinion" data-i18n="cat_opinion">✍️ مقالات الرأي</button>
+        <button class="category-btn active" data-category="chad" data-i18n="catChad">🇹🇩 Chad</button>
+        <button class="category-btn" data-category="africa" data-i18n="catAfrica">🌍 Africa</button>
+        <button class="category-btn" data-category="world" data-i18n="catWorld">🌐 World</button>
+        <button class="category-btn" data-category="opinion" data-i18n="catOpinion">✍️ Opinion Articles</button>
     </nav>
 
-    <!-- المحتوى الرئيسي -->
-    <main class="main-content">
-        
-        <!-- قسم الأخبار -->
-        <section id="news-section" class="content-section active-section">
-            <div class="articles-list" id="news-list">
-                <!-- يتم تحميل الأخبار هنا -->
-            </div>
+    <!-- Main Content Area -->
+    <main>
+        <!-- Standard News Grid Section -->
+        <section id="news-container" class="news-grid">
+            <!-- News Cards Will Render Dynamic Here -->
         </section>
 
-        <!-- قسم مقالات الرأي -->
-        <section id="opinion-section" class="content-section">
+        <!-- Opinion Articles & Publishing Area (Hidden by default, shown ONLY on clicking Opinion Articles) -->
+        <section id="opinion-section" style="display: none;">
             
-            <!-- أزرار الإجراءات العلوي -->
-            <div class="opinion-header-actions">
-                <button id="btn-open-publish" class="btn-primary" onclick="togglePublishForm()" data-i18n="btn_publish_top">أنشر مقالتك ✍️</button>
-                <button id="btn-admin-login" class="btn-admin" onclick="openAdminAuth()" data-i18n="btn_admin_login">دخول الأدمن 🔐</button>
+            <!-- Opinion Inner Sub-Tabs -->
+            <div class="sub-tabs">
+                <button class="sub-tab-btn active" data-tab="publish" data-i18n="publishTabBtn">✍️ Publish Article</button>
+                <button class="sub-tab-btn" data-tab="admin" data-i18n="adminLoginBtn">🔐 Admin Login</button>
             </div>
 
-            <!-- نموذج نشر مقال رأي جديد -->
-            <div id="publish-form-container" class="publish-card hidden">
-                <h2 data-i18n="form_title">أنشر مقالتك</h2>
-                <form id="opinion-form" onsubmit="handleArticleSubmit(event)">
+            <!-- Tab 1: Form to Publish Article -->
+            <div id="publish-form-container" class="form-card">
+                <h2 data-i18n="publishTitle">Publish Your Article</h2>
+                <form id="article-form">
                     <div class="form-group">
-                        <label for="author-avatar" data-i18n="lbl_avatar">الصورة الشخصية للكاتب:</label>
-                        <input type="file" id="author-avatar" accept="image/*">
+                        <label data-i18n="authorImgLabel">Author Profile Picture:</label>
+                        <input type="file" id="author-img" accept="image/*">
                     </div>
                     <div class="form-group">
-                        <input type="text" id="author-name" placeholder="اسم الكاتب" data-i18n-ph="ph_name" required>
+                        <input type="text" id="author-name" data-i18n-placeholder="authorNamePlaceholder" placeholder="Author Name" required>
                     </div>
                     <div class="form-group">
-                        <input type="text" id="article-title" placeholder="عنوان المقال" data-i18n-ph="ph_title" required>
+                        <input type="text" id="article-title" data-i18n-placeholder="articleTitlePlaceholder" placeholder="Article Title" required>
                     </div>
                     <div class="form-group">
-                        <textarea id="article-content" rows="6" placeholder="... اكتب مقالك هنا" data-i18n-ph="ph_content" required></textarea>
+                        <textarea id="article-body" rows="5" data-i18n-placeholder="articleContentPlaceholder" placeholder="Write your article here..." required></textarea>
                     </div>
-                    <button type="submit" class="btn-publish" data-i18n="btn_submit">أنشر مقالتك</button>
+                    <button type="submit" class="submit-btn" data-i18n="publishBtn">Publish Article</button>
                 </form>
             </div>
 
-            <!-- قائمة عرض مقالات الرأي -->
-            <div class="opinion-articles-list" id="opinion-articles-container">
-                <!-- يتم تحميل المقالات هنا -->
+            <!-- Tab 2: Admin Login Form -->
+            <div id="admin-login-container" class="form-card" style="display: none;">
+                <h2>Admin Login</h2>
+                <form id="admin-form">
+                    <div class="form-group">
+                        <input type="text" placeholder="Username" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Login</button>
+                </form>
             </div>
 
+            <!-- Published Opinion Articles List -->
+            <div id="opinion-articles-list" class="news-grid">
+                <!-- User submitted articles will go here -->
+            </div>
         </section>
-
     </main>
 
     <script src="script.js"></script>
