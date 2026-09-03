@@ -1,63 +1,97 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#002664" />
-  <meta name="description" content="تشاد24نيوز - الأخبار على مدار الساعة" />
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="icons/favicon.png" />
-  <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <title>تشاد24نيوز</title>
-  <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tchad24News</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
 </head>
 <body>
-  <div id="app">
-    <header class="header">
-      <div class="logo">
-        <span>🇹🇩</span>
-        <h1 id="appName">تشاد24نيوز</h1>
-      </div>
-      <div class="actions">
-        <div class="lang-switch">
-          <button data-lang="ar" class="lang-btn active">ع</button>
-          <button data-lang="fr" class="lang-btn">FR</button>
-          <button data-lang="en" class="lang-btn">EN</button>
+
+    <!-- الهيدر العلوي -->
+    <header class="main-header">
+        <div class="logo-container">
+            <span class="flag-icon">🇹🇩</span>
+            <h1 class="logo-text">Tchad24News</h1>
         </div>
-        <button id="themeBtn" class="icon-btn" title="Theme">🌙</button>
-        <button id="refreshBtn" class="icon-btn" title="Refresh">🔄</button>
-      </div>
+        <div class="header-controls">
+            <div class="lang-switch">
+                <button class="lang-btn active" data-lang="ar" onclick="switchLanguage('ar')">ع</button>
+                <button class="lang-btn" data-lang="fr" onclick="switchLanguage('fr')">FR</button>
+                <button class="lang-btn" data-lang="en" onclick="switchLanguage('en')">EN</button>
+            </div>
+            <button id="theme-toggle" class="icon-btn">🌙</button>
+        </div>
     </header>
 
-    <div id="breaking" class="breaking hidden">
-      <span class="badge" id="breakingLabel">عاجل</span>
-      <div class="marquee"><span id="breakingTitle"></span></div>
+    <!-- الشريط العاجل -->
+    <div class="ticker-wrap">
+        <div class="ticker-title" data-i18n="urgent">عاجل 🚨</div>
+        <div class="ticker-container">
+            <div class="ticker-content" id="ticker-content">
+                <span>La province du Moyen-Chari renforce son dispositif face aux urgences /// 🇹🇩 Haj 2027 : l'ORGEP annonce le lancement des préparatifs /// 🌍 Cairo hails visit by China's Xi</span>
+            </div>
+        </div>
     </div>
 
-    <!-- Nav Categories -->
-    <nav class="categories" id="categories">
-      <button class="cat-btn active" data-cat="tchad">🇹🇩 تشاد</button>
-      <button class="cat-btn" data-cat="africa">🌍 إفريقيا</button>
-      <button class="cat-btn" data-cat="world">🌐 العالم</button>
-      <button class="cat-btn" data-cat="opinion">✍️ مقالات الرأي</button>
+    <!-- شريط أقسام الأخبار -->
+    <nav class="categories-nav">
+        <button class="cat-btn active" data-category="tchad" data-i18n="cat_tchad">🇹🇩 تشاد</button>
+        <button class="cat-btn" data-category="africa" data-i18n="cat_africa">🌍 إفريقيا</button>
+        <button class="cat-btn" data-category="world" data-i18n="cat_world">🌐 العالم</button>
+        <button class="cat-btn" data-category="opinion" data-i18n="cat_opinion">✍️ مقالات الرأي</button>
     </nav>
 
-    <div id="offlineBar" class="offline-bar hidden">وضع عدم الاتصال بالإنترنت</div>
+    <!-- المحتوى الرئيسي -->
+    <main class="main-content">
+        
+        <!-- قسم الأخبار -->
+        <section id="news-section" class="content-section active-section">
+            <div class="articles-list" id="news-list">
+                <!-- يتم تحميل الأخبار هنا -->
+            </div>
+        </section>
 
-    <main id="newsList" class="news-list">
-      <div class="loading" id="loading">جاري تحميل الأخبار بسرعة...</div>
+        <!-- قسم مقالات الرأي -->
+        <section id="opinion-section" class="content-section">
+            
+            <!-- أزرار الإجراءات العلوي -->
+            <div class="opinion-header-actions">
+                <button id="btn-open-publish" class="btn-primary" onclick="togglePublishForm()" data-i18n="btn_publish_top">أنشر مقالتك ✍️</button>
+                <button id="btn-admin-login" class="btn-admin" onclick="openAdminAuth()" data-i18n="btn_admin_login">دخول الأدمن 🔐</button>
+            </div>
+
+            <!-- نموذج نشر مقال رأي جديد -->
+            <div id="publish-form-container" class="publish-card hidden">
+                <h2 data-i18n="form_title">أنشر مقالتك</h2>
+                <form id="opinion-form" onsubmit="handleArticleSubmit(event)">
+                    <div class="form-group">
+                        <label for="author-avatar" data-i18n="lbl_avatar">الصورة الشخصية للكاتب:</label>
+                        <input type="file" id="author-avatar" accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="author-name" placeholder="اسم الكاتب" data-i18n-ph="ph_name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="article-title" placeholder="عنوان المقال" data-i18n-ph="ph_title" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="article-content" rows="6" placeholder="... اكتب مقالك هنا" data-i18n-ph="ph_content" required></textarea>
+                    </div>
+                    <button type="submit" class="btn-publish" data-i18n="btn_submit">أنشر مقالتك</button>
+                </form>
+            </div>
+
+            <!-- قائمة عرض مقالات الرأي -->
+            <div class="opinion-articles-list" id="opinion-articles-container">
+                <!-- يتم تحميل المقالات هنا -->
+            </div>
+
+        </section>
+
     </main>
-  </div>
 
-  <script src="app.js"></script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-          .then(() => console.log('SW Registered'))
-          .catch(err => console.log('SW Error', err));
-      });
-    }
-  </script>
+    <script src="script.js"></script>
 </body>
 </html>
