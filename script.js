@@ -79,6 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const OPINION_STORAGE_KEY = 'tchad24_opinion_articles_v1';
     const THEME_STORAGE_KEY = 'tchad24_theme';
     const NOTIFY_STORAGE_KEY = 'tchad24_notify_enabled';
+    const CATEGORY_STORAGE_KEY = 'tchad24_last_category'; // مفتاح حفظ الفئة الأخيرة
     const ADMIN_SESSION_KEY = 'tchad24_is_admin';
     const ADMIN_CREDENTIALS = { username: 'admin', password: 'tchad24' };
 
@@ -195,8 +196,11 @@ document.addEventListener('DOMContentLoaded', () => {
        2. State & DOM References
        ====================================================================== */
 
+    // استعادة آخر تبويب تم اختياره، وإذا لم يوجد يتخذ 'chad' كافتراضي
+    const savedCategory = localStorage.getItem(CATEGORY_STORAGE_KEY) || 'chad';
+
     const state = {
-        activeCategory: 'chad', // البدء بـ تشاد افتراضياً حسب الترتيب الجديد
+        activeCategory: savedCategory,
         opinionArticles: loadOpinionArticles(),
         lastNotifiedNews: ''
     };
@@ -300,12 +304,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (dict[key]) el.placeholder = dict[key];
         });
 
+        // مزامنة حالة الأزرار مع التبويب المحفوظ
         categoryBtns.forEach(btn => {
             btn.classList.toggle('active', btn.dataset.category === state.activeCategory);
         });
 
-        renderActiveCategory();
-        renderOpinionArticles();
+        switchCategoryView(state.activeCategory);
         loadTickerNews();
     }
 
@@ -328,23 +332,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ======================================================================
-       6. Category Navigation
+       6. Category Navigation & Selection Memory
        ====================================================================== */
+
+    function switchCategoryView(category) {
+        state.activeCategory = category;
+        localStorage.setItem(CATEGORY_STORAGE_KEY, category); // حفظ التبويب المختار
+
+        if (state.activeCategory === 'opinion') {
+            opinionSection.style.display = 'block';
+            newsContainer.style.display = 'none';
+            renderOpinionArticles();
+        } else {
+            opinionSection.style.display = 'none';
+            newsContainer.style.display = 'grid';
+            renderActiveCategory();
+        }
+    }
 
     categoryBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             categoryBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            state.activeCategory = btn.dataset.category;
-
-            if (state.activeCategory === 'opinion') {
-                opinionSection.style.display = 'block';
-                newsContainer.style.display = 'none';
-            } else {
-                opinionSection.style.display = 'none';
-                newsContainer.style.display = 'grid';
-                renderActiveCategory();
-            }
+            switchCategoryView(btn.dataset.category);
         });
     });
 
