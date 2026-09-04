@@ -1,85 +1,109 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     /* ======================================================================
-       0. Feeds Configuration
+       0. Feeds Configuration (Localized Sources)
        ====================================================================== */
 
-    const CHAD_RSS_SOURCES = [
-        // المصادر التشادية الحالية
-        { url: 'https://www.alwihdainfo.com/feed/', name: 'Alwihda Info' },
-        { url: 'https://tchadinfos.com/feed/', name: 'Tchadinfos' },
-        { url: 'https://tchadone.com/feed/', name: 'Tchad One' },
-        { url: 'https://journaldutchad.com/feed/', name: 'Journal du Tchad' },
-        { url: 'https://lepaystchad.com/feed/', name: 'Le Pays Tchad' },
-        { url: 'https://zoomtchad.com/feed/', name: 'Zoom Tchad' },
-        { url: 'https://letchadanthropus-tribune.com/feed/', name: 'Le Tchadanthropus-Tribune' },
-        
-        // المصادر المضافة حديثاً بالترتيب المطلوب
-        { url: 'https://www.jeuneafrique.com/pays/tchad/feed/', name: 'Jeune Afrique - Tchad' },
-        { url: 'https://www.france24.com/fr/tag/tchad/rss', name: 'France 24 - Tchad' },
-        { url: 'https://www.rfi.fr/fr/tag/tchad/rss', name: 'RFI - Tchad' },
-        { url: 'https://www.apanews.net/category/tchad-chad/feed/', name: 'APA News - Tchad' },
-        { url: 'https://www.francetvinfo.fr/monde/afrique/tchad.rss', name: 'Franceinfo - Tchad' },
-        { url: 'https://www.africanews.com/country/chad/feed/', name: 'Africanews - Chad' },
-        { url: 'https://allafrica.com/tools/headlines/rdf/chad/headlines.rdf', name: 'AllAfrica - Chad' }
-    ];
-
-    const AFRICA_RSS_SOURCES = [
-        { url: 'https://www.africanews.com/feed/', name: 'Africanews' },
-        { url: 'https://www.theafricareport.com/feed/', name: 'The Africa Report' },
-        { url: 'https://topafricanews.com/feed/', name: 'Top Africa News' },
-        { url: 'https://allafrica.com/tools/headlines/rdf/latest/headlines.rdf', name: 'AllAfrica' },
-        { url: 'https://www.jeuneafrique.com/feed/', name: 'Jeune Afrique' },
-        { url: 'https://www.bbc.com/arabic/topics/ck20or7087gt/rss.xml', name: 'BBC Africa (عربي)' }
-    ];
-
-    const WORLD_RSS_SOURCES = [
-        { url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', name: 'NYT World' },
-        { url: 'https://www.bbc.com/arabic/index.xml', name: 'BBC Arabic' },
-        { url: 'https://www.aljazeera.net/rss', name: 'الجزيرة' },
-        { url: 'https://www.france24.com/ar/rss', name: 'فرانس 24' },
-        { url: 'https://www.reutersagency.com/feed/?best-topics=world-news&post_type=best', name: 'Reuters' },
-        { url: 'https://apnews.com/feed', name: 'AP News' },
-        { url: 'https://www.afp.com/en/news-hub/rss', name: 'AFP' },
-        { url: 'https://news.google.com/rss?hl=ar&gl=SA&ceid=SA:ar', name: 'Google News' }
-    ];
-
-    const SPORTS_RSS_SOURCES = [
-        // الكرة العربية والإقليمية
-        { url: 'https://www.kooora.com/rss.aspx', name: '🌙 كووورة' },
-        { url: 'https://www.filgoal.com/rss/news', name: '🌙 في الجول' },
-        { url: 'https://www.yallakora.com/rss/rss.aspx', name: '🌙 يلا كورة' },
-        { url: 'https://www.hespress.com/sport/feed', name: '🌙 هسبريس رياضة' },
-        { url: 'https://www.foot24.tn/rss.xml', name: '🌙 فوت 24' },
-        
-        // الكرة الأوروبية والعالمية
-        { url: 'http://feeds.bbci.co.uk/sport/football/rss.xml', name: '🇪🇺 BBC Football' },
-        { url: 'https://www.skysports.com/rss/12040', name: '🇪🇺 Sky Sports Football' },
-        { url: 'https://www.uefa.com/rssfeed/news/rss.xml', name: '🇪🇺 UEFA News' },
-        { url: 'https://www.espn.com/espn/rss/soccer/news', name: '🌍 ESPN Soccer' },
-        { url: 'https://www.marca.com/rss/en/index.xml', name: '🇪🇺 MARCA English' },
-
-        // الكرة الأفريقية
-        { url: 'https://www.cafonline.com/rss/', name: '🌍 CAF Official' },
-        { url: 'https://www.kingfut.com/feed/', name: '🌍 KingFut Africa' },
-        { url: 'https://www.africanews.com/feed/sport', name: '🌍 Africanews Sport' }
-    ];
-
-    const PRESS_RSS_SOURCES = [
-        { url: 'https://www.aljazeera.net/rss', name: 'الجزيرة' },
-        { url: 'https://newspapersonline.com/feed/', name: 'Newspapers Online' },
-        { url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', name: 'The New York Times' },
-        { url: 'https://www.theguardian.com/world/rss', name: 'The Guardian' },
-        { url: 'https://feeds.washingtonpost.com/rss/world', name: 'The Washington Post' },
-        { url: 'https://www.aawsat.com/rss', name: 'الشرق الأوسط' },
-        { url: 'https://www.lemonde.fr/rss/une.xml', name: 'Le Monde' }
-    ];
+    const FEEDS = {
+        ar: {
+            chad: [
+                { url: 'https://www.alwihdainfo.com/feed/', name: 'الوحدة إنفو' },
+                { url: 'https://tchadinfos.com/feed/', name: 'تشاد إنفو' },
+                { url: 'https://tchadone.com/feed/', name: 'تشاد وان' },
+                { url: 'https://journaldutchad.com/feed/', name: 'جريدة تشاد' },
+                { url: 'https://lepaystchad.com/feed/', name: 'البلد تشاد' },
+                { url: 'https://zoomtchad.com/feed/', name: 'زوم تشاد' }
+            ],
+            africa: [
+                { url: 'https://www.bbc.com/arabic/topics/ck20or7087gt/rss.xml', name: 'بي بي سي أفريقيا' },
+                { url: 'https://www.france24.com/ar/tag/%D8%A3%D9%81%D8%B1%D9%8A%D9%82%D9%8A%D8%A7/rss', name: 'فرانس 24 أفريقيا' }
+            ],
+            world: [
+                { url: 'https://www.aljazeera.net/rss', name: 'الجزيرة' },
+                { url: 'https://www.bbc.com/arabic/index.xml', name: 'بي بي سي عربي' },
+                { url: 'https://www.france24.com/ar/rss', name: 'فرانس 24' },
+                { url: 'https://news.google.com/rss?hl=ar&gl=SA&ceid=SA:ar', name: 'أخبار جوجل' }
+            ],
+            sports: [
+                { url: 'https://www.kooora.com/rss.aspx', name: 'كووورة' },
+                { url: 'https://www.filgoal.com/rss/news', name: 'في الجول' },
+                { url: 'https://www.yallakora.com/rss/rss.aspx', name: 'يلا كورة' }
+            ],
+            press: [
+                { url: 'https://www.aljazeera.net/rss', name: 'الجزيرة' },
+                { url: 'https://www.aawsat.com/rss', name: 'الشرق الأوسط' }
+            ]
+        },
+        fr: {
+            chad: [
+                { url: 'https://www.alwihdainfo.com/feed/', name: 'Alwihda Info' },
+                { url: 'https://tchadinfos.com/feed/', name: 'Tchadinfos' },
+                { url: 'https://tchadone.com/feed/', name: 'Tchad One' },
+                { url: 'https://journaldutchad.com/feed/', name: 'Journal du Tchad' },
+                { url: 'https://lepaystchad.com/feed/', name: 'Le Pays Tchad' },
+                { url: 'https://www.jeuneafrique.com/pays/tchad/feed/', name: 'Jeune Afrique Tchad' },
+                { url: 'https://www.france24.com/fr/tag/tchad/rss', name: 'France 24 Tchad' },
+                { url: 'https://www.rfi.fr/fr/tag/tchad/rss', name: 'RFI Tchad' }
+            ],
+            africa: [
+                { url: 'https://www.jeuneafrique.com/feed/', name: 'Jeune Afrique' },
+                { url: 'https://www.france24.com/fr/afrique/rss', name: 'France 24 Afrique' },
+                { url: 'https://www.rfi.fr/fr/afrique/rss', name: 'RFI Afrique' },
+                { url: 'https://www.lemonde.fr/afrique/rss_full.xml', name: 'Le Monde Afrique' }
+            ],
+            world: [
+                { url: 'https://www.france24.com/fr/rss', name: 'France 24 Monde' },
+                { url: 'https://www.lemonde.fr/rss/une.xml', name: 'Le Monde' },
+                { url: 'https://www.courrierinternational.com/feed/all/rss.xml', name: 'Courrier International' },
+                { url: 'https://www.rfi.fr/fr/rss', name: 'RFI Monde' }
+            ],
+            sports: [
+                { url: 'https://www.lequipe.fr/rss/actu_rss.xml', name: "L'Équipe" },
+                { url: 'https://www.france24.com/fr/sports/rss', name: 'France 24 Sports' },
+                { url: 'https://www.footmercato.net/rss/', name: 'Foot Mercato' }
+            ],
+            press: [
+                { url: 'https://www.lemonde.fr/rss/une.xml', name: 'Le Monde' },
+                { url: 'https://www.lefigaro.fr/rss/figaro_actualites.xml', name: 'Le Figaro' },
+                { url: 'https://www.liberation.fr/arc/outboundfeeds/rss/', name: 'Libération' }
+            ]
+        },
+        en: {
+            chad: [
+                { url: 'https://www.africanews.com/country/chad/feed/', name: 'Africanews Chad' },
+                { url: 'https://allafrica.com/tools/headlines/rdf/chad/headlines.rdf', name: 'AllAfrica Chad' },
+                { url: 'https://www.aljazeera.com/xml/rss/all.xml', name: 'Al Jazeera English' }
+            ],
+            africa: [
+                { url: 'https://www.africanews.com/feed/', name: 'Africanews' },
+                { url: 'https://www.theafricareport.com/feed/', name: 'The Africa Report' },
+                { url: 'https://topafricanews.com/feed/', name: 'Top Africa News' },
+                { url: 'https://allafrica.com/tools/headlines/rdf/latest/headlines.rdf', name: 'AllAfrica' }
+            ],
+            world: [
+                { url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', name: 'NYT World' },
+                { url: 'https://feeds.bbci.co.uk/news/world/rss.xml', name: 'BBC News World' },
+                { url: 'https://www.aljazeera.com/xml/rss/all.xml', name: 'Al Jazeera' },
+                { url: 'https://www.reutersagency.com/feed/?best-topics=world-news&post_type=best', name: 'Reuters' }
+            ],
+            sports: [
+                { url: 'http://feeds.bbci.co.uk/sport/football/rss.xml', name: 'BBC Sport' },
+                { url: 'https://www.skysports.com/rss/12040', name: 'Sky Sports' },
+                { url: 'https://www.espn.com/espn/rss/soccer/news', name: 'ESPN Soccer' }
+            ],
+            press: [
+                { url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', name: 'The New York Times' },
+                { url: 'https://www.theguardian.com/world/rss', name: 'The Guardian' },
+                { url: 'https://feeds.washingtonpost.com/rss/world', name: 'The Washington Post' }
+            ]
+        }
+    };
 
     const RSS2JSON_ENDPOINT = 'https://api.rss2json.com/v1/api.json?rss_url=';
     const OPINION_STORAGE_KEY = 'tchad24_opinion_articles_v1';
     const THEME_STORAGE_KEY = 'tchad24_theme';
     const NOTIFY_STORAGE_KEY = 'tchad24_notify_enabled';
-    const CATEGORY_STORAGE_KEY = 'tchad24_last_category'; // مفتاح حفظ الفئة الأخيرة
+    const CATEGORY_STORAGE_KEY = 'tchad24_last_category';
     const ADMIN_SESSION_KEY = 'tchad24_is_admin';
     const ADMIN_CREDENTIALS = { username: 'admin', password: 'tchad24' };
 
@@ -110,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
             passwordPlaceholder: "Password",
             loginBtn: "Login",
             opinionListTitle: "Published Articles",
-            loadingText: "Loading and translating news…",
+            loadingText: "Loading news…",
             emptyNewsText: "No news available right now.",
             emptyOpinionText: "No opinion articles published yet.",
             readMoreText: "Read more →",
@@ -142,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
             passwordPlaceholder: "Mot de passe",
             loginBtn: "Connexion",
             opinionListTitle: "Articles publiés",
-            loadingText: "Chargement et traduction des actualités…",
+            loadingText: "Chargement des actualités…",
             emptyNewsText: "Aucune actualité disponible pour le moment.",
             emptyOpinionText: "Aucun article d'opinion publié pour le moment.",
             readMoreText: "Lire la suite →",
@@ -174,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
             passwordPlaceholder: "كلمة المرور",
             loginBtn: "دخول",
             opinionListTitle: "المقالات المنشورة",
-            loadingText: "جارٍ تحميل الأخبار وترجمتها…",
+            loadingText: "جارٍ تحميل الأخبار…",
             emptyNewsText: "لا توجد أخبار متاحة حاليًا.",
             emptyOpinionText: "لم يُنشر أي مقال رأي بعد.",
             readMoreText: "اقرأ المزيد ←",
@@ -196,7 +220,6 @@ document.addEventListener('DOMContentLoaded', () => {
        2. State & DOM References
        ====================================================================== */
 
-    // استعادة آخر تبويب تم اختياره، وإذا لم يوجد يتخذ 'chad' كافتراضي
     const savedCategory = localStorage.getItem(CATEGORY_STORAGE_KEY) || 'chad';
 
     const state = {
@@ -223,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
        ====================================================================== */
 
     async function translateText(text, targetLang) {
-        if (!text || targetLang === 'fr') return text;
+        if (!text) return text;
         try {
             const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`);
             const data = await res.json();
@@ -304,7 +327,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (dict[key]) el.placeholder = dict[key];
         });
 
-        // مزامنة حالة الأزرار مع التبويب المحفوظ
         categoryBtns.forEach(btn => {
             btn.classList.toggle('active', btn.dataset.category === state.activeCategory);
         });
@@ -337,7 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function switchCategoryView(category) {
         state.activeCategory = category;
-        localStorage.setItem(CATEGORY_STORAGE_KEY, category); // حفظ التبويب المختار
+        localStorage.setItem(CATEGORY_STORAGE_KEY, category);
 
         if (state.activeCategory === 'opinion') {
             opinionSection.style.display = 'block';
@@ -361,17 +383,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderActiveCategory() {
         if (state.activeCategory === 'opinion') return;
 
-        if (state.activeCategory === 'chad') {
-            loadCategoryNews(CHAD_RSS_SOURCES, 'chad');
-        } else if (state.activeCategory === 'africa') {
-            loadCategoryNews(AFRICA_RSS_SOURCES, 'africa');
-        } else if (state.activeCategory === 'world') {
-            loadCategoryNews(WORLD_RSS_SOURCES, 'world');
-        } else if (state.activeCategory === 'sports') {
-            loadCategoryNews(SPORTS_RSS_SOURCES, 'sports');
-        } else if (state.activeCategory === 'press') {
-            loadCategoryNews(PRESS_RSS_SOURCES, 'press');
-        }
+        const sources = (FEEDS[currentLang] && FEEDS[currentLang][state.activeCategory]) 
+            || FEEDS.en[state.activeCategory] 
+            || [];
+
+        loadCategoryNews(sources, state.activeCategory);
     }
 
     /* ======================================================================
@@ -440,14 +456,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         merged = merged.slice(0, 24);
 
-        if (currentLang !== 'fr') {
-            merged = await Promise.all(merged.map(async item => ({
-                ...item,
-                title: await translateText(item.title, currentLang),
-                description: await translateText(item.description, currentLang)
-            })));
-        }
-
         if (state.activeCategory === categoryKey) {
             renderNewsList(merged);
         }
@@ -507,27 +515,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadTickerNews() {
         try {
-            const [chadFeeds, africaFeeds, worldFeeds] = await Promise.all([
-                fetchOneFeed(CHAD_RSS_SOURCES[0]).catch(() => []),
-                fetchOneFeed(AFRICA_RSS_SOURCES[0]).catch(() => []),
-                fetchOneFeed(WORLD_RSS_SOURCES[0]).catch(() => [])
-            ]);
+            const langSources = FEEDS[currentLang] || FEEDS.en;
+            const sourcesToFetch = [
+                (langSources.chad && langSources.chad[0]),
+                (langSources.africa && langSources.africa[0]),
+                (langSources.world && langSources.world[0])
+            ].filter(Boolean);
 
-            const headlineChad = chadFeeds[0] ? `🇹🇩 ${chadFeeds[0].title}` : '';
-            const headlineAfrica = africaFeeds[0] ? `🌍 ${africaFeeds[0].title}` : '';
-            const headlineWorld = worldFeeds[0] ? `🌐 ${worldFeeds[0].title}` : '';
+            const feeds = await Promise.all(
+                sourcesToFetch.map(src => fetchOneFeed(src).catch(() => []))
+            );
 
-            let combinedText = [headlineChad, headlineAfrica, headlineWorld].filter(Boolean).join('  ـــ  ');
-            
-            if (currentLang !== 'fr') {
-                combinedText = await translateText(combinedText, currentLang);
-            }
+            const headlines = feeds
+                .map(f => f[0] ? f[0].title : '')
+                .filter(Boolean);
+
+            const combinedText = headlines.join('  ـــ  ');
 
             tickerContent.textContent = combinedText || t('siteTitle');
 
-            if (headlineChad) {
-                const cleanHeadline = chadFeeds[0].title;
-                triggerBreakingNewsNotification(cleanHeadline);
+            if (feeds[0] && feeds[0][0]) {
+                triggerBreakingNewsNotification(feeds[0][0].title);
             }
         } catch (e) {
             tickerContent.textContent = t('siteTitle');
