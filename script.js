@@ -1,17 +1,27 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     /* ======================================================================
-       0. Feeds Configuration (Football: European -> Arab -> African)
+       0. Feeds Configuration
        ====================================================================== */
 
     const CHAD_RSS_SOURCES = [
+        // المصادر التشادية الحالية
         { url: 'https://www.alwihdainfo.com/feed/', name: 'Alwihda Info' },
         { url: 'https://tchadinfos.com/feed/', name: 'Tchadinfos' },
         { url: 'https://tchadone.com/feed/', name: 'Tchad One' },
         { url: 'https://journaldutchad.com/feed/', name: 'Journal du Tchad' },
         { url: 'https://lepaystchad.com/feed/', name: 'Le Pays Tchad' },
         { url: 'https://zoomtchad.com/feed/', name: 'Zoom Tchad' },
-        { url: 'https://letchadanthropus-tribune.com/feed/', name: 'Le Tchadanthropus-Tribune' }
+        { url: 'https://letchadanthropus-tribune.com/feed/', name: 'Le Tchadanthropus-Tribune' },
+        
+        // المصادر المضافة حديثاً بالترتيب المطلوب
+        { url: 'https://www.jeuneafrique.com/pays/tchad/feed/', name: 'Jeune Afrique - Tchad' },
+        { url: 'https://www.france24.com/fr/tag/tchad/rss', name: 'France 24 - Tchad' },
+        { url: 'https://www.rfi.fr/fr/tag/tchad/rss', name: 'RFI - Tchad' },
+        { url: 'https://www.apanews.net/category/tchad-chad/feed/', name: 'APA News - Tchad' },
+        { url: 'https://www.francetvinfo.fr/monde/afrique/tchad.rss', name: 'Franceinfo - Tchad' },
+        { url: 'https://www.africanews.com/country/chad/feed/', name: 'Africanews - Chad' },
+        { url: 'https://allafrica.com/tools/headlines/rdf/chad/headlines.rdf', name: 'AllAfrica - Chad' }
     ];
 
     const AFRICA_RSS_SOURCES = [
@@ -27,24 +37,37 @@ document.addEventListener('DOMContentLoaded', () => {
         { url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', name: 'NYT World' },
         { url: 'https://www.bbc.com/arabic/index.xml', name: 'BBC Arabic' },
         { url: 'https://www.aljazeera.net/rss', name: 'الجزيرة' },
-        { url: 'https://www.france24.com/ar/rss', name: 'فرانس 24' }
+        { url: 'https://www.france24.com/ar/rss', name: 'فرانس 24' },
+        { url: 'https://www.reutersagency.com/feed/?best-topics=world-news&post_type=best', name: 'Reuters' },
+        { url: 'https://apnews.com/feed', name: 'AP News' },
+        { url: 'https://www.afp.com/en/news-hub/rss', name: 'AFP' },
+        { url: 'https://news.google.com/rss?hl=ar&gl=SA&ceid=SA:ar', name: 'Google News' }
     ];
 
-    // كرة القدم بالترتيب: الأوروبية -> العربية -> الأفريقية
     const SPORTS_RSS_SOURCES = [
-        // European Football
-        { url: 'https://www.uefa.com/rssfeed/news/rss.xml', name: '🇪🇺 UEFA Football' },
-        { url: 'https://www.skysports.com/rss/12040', name: '🇪🇺 Sky Football' },
-        { url: 'http://feeds.bbci.co.uk/sport/football/rss.xml', name: '🇪🇺 BBC Football' },
-        // Arab Football
-        { url: 'https://www.kooora.com/rss.aspx', name: '🌙 كووورة عربية' },
+        // الكرة العربية والإقليمية
+        { url: 'https://www.kooora.com/rss.aspx', name: '🌙 كووورة' },
         { url: 'https://www.filgoal.com/rss/news', name: '🌙 في الجول' },
-        // African Football
-        { url: 'https://www.cafonline.com/rss/', name: '🌍 CAF Football' },
-        { url: 'https://www.kingfut.com/feed/', name: '🌍 African Football' }
+        { url: 'https://www.yallakora.com/rss/rss.aspx', name: '🌙 يلا كورة' },
+        { url: 'https://www.hespress.com/sport/feed', name: '🌙 هسبريس رياضة' },
+        { url: 'https://www.foot24.tn/rss.xml', name: '🌙 فوت 24' },
+        
+        // الكرة الأوروبية والعالمية
+        { url: 'http://feeds.bbci.co.uk/sport/football/rss.xml', name: '🇪🇺 BBC Football' },
+        { url: 'https://www.skysports.com/rss/12040', name: '🇪🇺 Sky Sports Football' },
+        { url: 'https://www.uefa.com/rssfeed/news/rss.xml', name: '🇪🇺 UEFA News' },
+        { url: 'https://www.espn.com/espn/rss/soccer/news', name: '🌍 ESPN Soccer' },
+        { url: 'https://www.marca.com/rss/en/index.xml', name: '🇪🇺 MARCA English' },
+
+        // الكرة الأفريقية
+        { url: 'https://www.cafonline.com/rss/', name: '🌍 CAF Official' },
+        { url: 'https://www.kingfut.com/feed/', name: '🌍 KingFut Africa' },
+        { url: 'https://www.africanews.com/feed/sport', name: '🌍 Africanews Sport' }
     ];
 
     const PRESS_RSS_SOURCES = [
+        { url: 'https://www.aljazeera.net/rss', name: 'الجزيرة' },
+        { url: 'https://newspapersonline.com/feed/', name: 'Newspapers Online' },
         { url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', name: 'The New York Times' },
         { url: 'https://www.theguardian.com/world/rss', name: 'The Guardian' },
         { url: 'https://feeds.washingtonpost.com/rss/world', name: 'The Washington Post' },
@@ -70,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
             catChad: "🇹🇩 Chad",
             catAfrica: "🌍 Africa",
             catWorld: "🌐 World",
-            catSports: "⚽ Football",
+            catSports: "⚽ Sports",
             catPress: "📰 Newspapers",
             catOpinion: "✍️ Opinion Articles",
             publishTitle: "Publish Your Article",
@@ -102,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
             catChad: "🇹🇩 Tchad",
             catAfrica: "🌍 Afrique",
             catWorld: "🌐 Monde",
-            catSports: "⚽ Football",
+            catSports: "⚽ Sports",
             catPress: "📰 Journaux",
             catOpinion: "✍️ Articles d'opinion",
             publishTitle: "Publiez votre article",
@@ -134,8 +157,8 @@ document.addEventListener('DOMContentLoaded', () => {
             catChad: "🇹🇩 تشاد",
             catAfrica: "🌍 إفريقيا",
             catWorld: "🌐 العالم",
-            catSports: "⚽ كرة القدم",
-            catPress: "📰 صحف ومواقع",
+            catSports: "⚽ الرياضة",
+            catPress: "📰 الصحف",
             catOpinion: "✍️ مقالات الرأي",
             publishTitle: "أنشر مقالتك",
             authorImgLabel: "الصورة الشخصية للكاتب:",
@@ -173,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
        ====================================================================== */
 
     const state = {
-        activeCategory: 'chad',
+        activeCategory: 'chad', // البدء بـ تشاد افتراضياً حسب الترتيب الجديد
         opinionArticles: loadOpinionArticles(),
         lastNotifiedNews: ''
     };
@@ -275,6 +298,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
             const key = el.dataset.i18nPlaceholder;
             if (dict[key]) el.placeholder = dict[key];
+        });
+
+        categoryBtns.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.category === state.activeCategory);
         });
 
         renderActiveCategory();
@@ -488,7 +515,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             tickerContent.textContent = combinedText || t('siteTitle');
 
-            // إرسال إشعار للمستخدم بالخبر العاجل إذا كانت الخاصية مفعلة
             if (headlineChad) {
                 const cleanHeadline = chadFeeds[0].title;
                 triggerBreakingNewsNotification(cleanHeadline);
