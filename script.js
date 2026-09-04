@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { url: 'https://lepaystchad.com/feed/', name: 'Le Pays Tchad' },
         { url: 'https://zoomtchad.com/feed/', name: 'Zoom Tchad' },
         { url: 'https://letchadanthropus-tribune.com/feed/', name: 'Le Tchadanthropus-Tribune' },
-        
+
         // المصادر المضافة حديثاً بالترتيب المطلوب
         { url: 'https://www.jeuneafrique.com/pays/tchad/feed/', name: 'Jeune Afrique - Tchad' },
         { url: 'https://www.france24.com/fr/tag/tchad/rss', name: 'France 24 - Tchad' },
@@ -34,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     const WORLD_RSS_SOURCES = [
-        // المصادر العالمية الحالية
         { url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', name: 'NYT World' },
         { url: 'https://www.bbc.com/arabic/index.xml', name: 'BBC Arabic' },
         { url: 'https://www.aljazeera.net/rss', name: 'الجزيرة' },
@@ -42,12 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
         { url: 'https://www.reutersagency.com/feed/?best-topics=world-news&post_type=best', name: 'Reuters' },
         { url: 'https://apnews.com/feed', name: 'AP News' },
         { url: 'https://www.afp.com/en/news-hub/rss', name: 'AFP' },
-        
-        // المصدر المضاف حديثاً
         { url: 'https://news.google.com/rss?hl=ar&gl=SA&ceid=SA:ar', name: 'Google News' }
     ];
 
-    // قسم الرياضة - تغطية شاملة للكرة العربية والنسخ الأوروبية والإفريقية
     const SPORTS_RSS_SOURCES = [
         // الكرة العربية والإقليمية
         { url: 'https://www.kooora.com/rss.aspx', name: '🌙 كووورة' },
@@ -55,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { url: 'https://www.yallakora.com/rss/rss.aspx', name: '🌙 يلا كورة' },
         { url: 'https://www.hespress.com/sport/feed', name: '🌙 هسبريس رياضة' },
         { url: 'https://www.foot24.tn/rss.xml', name: '🌙 فوت 24' },
-        
+
         // الكرة الأوروبية والعالمية
         { url: 'http://feeds.bbci.co.uk/sport/football/rss.xml', name: '🇪🇺 BBC Football' },
         { url: 'https://www.skysports.com/rss/12040', name: '🇪🇺 Sky Sports Football' },
@@ -121,7 +117,10 @@ document.addEventListener('DOMContentLoaded', () => {
             deleteConfirmText: "Delete this article?",
             sourceLabel: "Source",
             notificationsEnabled: "Breaking News Notifications Enabled!",
-            notificationsDisabled: "Notifications Disabled."
+            notificationsDisabled: "Notifications Disabled.",
+            articlePublishedText: "Your article has been published below!",
+            adminLoginSuccessText: "Logged in as admin.",
+            adminLoginErrorText: "Incorrect username or password."
         },
         fr: {
             siteTitle: "Tchad24News",
@@ -153,7 +152,10 @@ document.addEventListener('DOMContentLoaded', () => {
             deleteConfirmText: "Supprimer cet article ?",
             sourceLabel: "Source",
             notificationsEnabled: "Notifications d'urgence activées !",
-            notificationsDisabled: "Notifications désactivées."
+            notificationsDisabled: "Notifications désactivées.",
+            articlePublishedText: "Votre article a été publié ci-dessous !",
+            adminLoginSuccessText: "Connecté en tant qu'admin.",
+            adminLoginErrorText: "Nom d'utilisateur ou mot de passe incorrect."
         },
         ar: {
             siteTitle: "تشاد24نيوز",
@@ -185,7 +187,10 @@ document.addEventListener('DOMContentLoaded', () => {
             deleteConfirmText: "هل تريد حذف هذا المقال؟",
             sourceLabel: "المصدر",
             notificationsEnabled: "تم تفعيل إشعارات الأخبار العاجلة!",
-            notificationsDisabled: "تم إلغاء تفعيل الإشعارات."
+            notificationsDisabled: "تم إلغاء تفعيل الإشعارات.",
+            articlePublishedText: "تم نشر مقالتك أدناه!",
+            adminLoginSuccessText: "تم تسجيل الدخول كأدمن.",
+            adminLoginErrorText: "اسم المستخدم أو كلمة المرور غير صحيحة."
         }
     };
 
@@ -200,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
        ====================================================================== */
 
     const state = {
-        activeCategory: 'sports', // جعل الرياضة هي الفئة الأولية
+        activeCategory: 'chad', // البدء بـ تشاد افتراضياً حسب الترتيب الجديد
         opinionArticles: loadOpinionArticles(),
         lastNotifiedNews: ''
     };
@@ -223,10 +228,12 @@ document.addEventListener('DOMContentLoaded', () => {
        ====================================================================== */
 
     async function translateText(text, targetLang) {
-        if (!text || targetLang === 'fr') return text;
+        if (!text) return text;
         try {
             const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`);
+            if (!res.ok) return text;
             const data = await res.json();
+            if (!Array.isArray(data) || !Array.isArray(data[0])) return text;
             return data[0].map(item => item[0]).join('');
         } catch (e) {
             return text;
@@ -268,6 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function triggerBreakingNewsNotification(title) {
+        if (!("Notification" in window)) return;
         const isEnabled = localStorage.getItem(NOTIFY_STORAGE_KEY) === 'true';
         if (isEnabled && Notification.permission === 'granted' && title !== state.lastNotifiedNews) {
             state.lastNotifiedNews = title;
@@ -304,7 +312,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (dict[key]) el.placeholder = dict[key];
         });
 
-        // ضبط الزر النشط في واجهة المستخدم ليطابق الفئة الفعالة (الرياضة)
         categoryBtns.forEach(btn => {
             btn.classList.toggle('active', btn.dataset.category === state.activeCategory);
         });
@@ -391,9 +398,12 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const d = new Date(dateInput);
             if (isNaN(d.getTime())) return '';
-            return d.toLocaleDateString(currentLang === 'ar' ? 'ar-TD' : (currentLang === 'fr' ? 'fr-FR' : 'en-US'), {
-                year: 'numeric', month: 'short', day: 'numeric'
-            });
+            const locale = currentLang === 'ar' ? 'ar-TD' : (currentLang === 'fr' ? 'fr-FR' : 'en-US');
+            try {
+                return d.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' });
+            } catch (localeErr) {
+                return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+            }
         } catch (e) {
             return '';
         }
@@ -411,7 +421,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (data.status !== 'ok' || !Array.isArray(data.items)) throw new Error('Bad feed');
-        
+
         return data.items.map(raw => ({
             title: raw.title || '',
             description: stripHtml(raw.description).slice(0, 200),
@@ -435,13 +445,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         merged = merged.slice(0, 24);
 
-        if (currentLang !== 'fr') {
-            merged = await Promise.all(merged.map(async item => ({
-                ...item,
-                title: await translateText(item.title, currentLang),
-                description: await translateText(item.description, currentLang)
-            })));
-        }
+        merged = await Promise.all(merged.map(async item => ({
+            ...item,
+            title: await translateText(item.title, currentLang),
+            description: await translateText(item.description, currentLang)
+        })));
 
         if (state.activeCategory === categoryKey) {
             renderNewsList(merged);
@@ -501,6 +509,7 @@ document.addEventListener('DOMContentLoaded', () => {
        ====================================================================== */
 
     async function loadTickerNews() {
+        if (!tickerContent) return;
         try {
             const [chadFeeds, africaFeeds, worldFeeds] = await Promise.all([
                 fetchOneFeed(CHAD_RSS_SOURCES[0]).catch(() => []),
@@ -513,8 +522,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const headlineWorld = worldFeeds[0] ? `🌐 ${worldFeeds[0].title}` : '';
 
             let combinedText = [headlineChad, headlineAfrica, headlineWorld].filter(Boolean).join('  ـــ  ');
-            
-            if (currentLang !== 'fr') {
+
+            if (combinedText) {
                 combinedText = await translateText(combinedText, currentLang);
             }
 
@@ -621,6 +630,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    const publishMessage = document.getElementById('publish-message');
+    const adminMessage = document.getElementById('admin-message');
+
+    function showFormMessage(el, text, isError) {
+        if (!el) return;
+        el.textContent = text;
+        el.classList.toggle('error', !!isError);
+        el.classList.toggle('success', !isError);
+        clearTimeout(el._hideTimer);
+        el._hideTimer = setTimeout(() => { el.textContent = ''; }, 4000);
+    }
+
     if (articleForm) {
         articleForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -641,6 +662,7 @@ document.addEventListener('DOMContentLoaded', () => {
             saveOpinionArticles();
             renderOpinionArticles();
             articleForm.reset();
+            showFormMessage(publishMessage, t('articlePublishedText'), false);
         });
     }
 
@@ -654,6 +676,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 sessionStorage.setItem(ADMIN_SESSION_KEY, 'true');
                 adminForm.reset();
                 renderOpinionArticles();
+                showFormMessage(adminMessage, t('adminLoginSuccessText'), false);
+            } else {
+                showFormMessage(adminMessage, t('adminLoginErrorText'), true);
             }
         });
     }
