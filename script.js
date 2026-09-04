@@ -5,85 +5,52 @@ document.addEventListener('DOMContentLoaded', () => {
        ====================================================================== */
 
     const CHAD_RSS_SOURCES = [
-        // المصادر التشادية الحالية
         { url: 'https://www.alwihdainfo.com/feed/', name: 'Alwihda Info' },
         { url: 'https://tchadinfos.com/feed/', name: 'Tchadinfos' },
-        { url: 'https://tchadone.com/feed/', name: 'Tchad One' },
         { url: 'https://journaldutchad.com/feed/', name: 'Journal du Tchad' },
-        { url: 'https://lepaystchad.com/feed/', name: 'Le Pays Tchad' },
-        { url: 'https://zoomtchad.com/feed/', name: 'Zoom Tchad' },
-        { url: 'https://letchadanthropus-tribune.com/feed/', name: 'Le Tchadanthropus-Tribune' },
-
-        // المصادر المضافة حديثاً بالترتيب المطلوب
         { url: 'https://www.jeuneafrique.com/pays/tchad/feed/', name: 'Jeune Afrique - Tchad' },
         { url: 'https://www.france24.com/fr/tag/tchad/rss', name: 'France 24 - Tchad' },
         { url: 'https://www.rfi.fr/fr/tag/tchad/rss', name: 'RFI - Tchad' },
-        { url: 'https://www.apanews.net/category/tchad-chad/feed/', name: 'APA News - Tchad' },
-        { url: 'https://www.francetvinfo.fr/monde/afrique/tchad.rss', name: 'Franceinfo - Tchad' },
-        { url: 'https://www.africanews.com/country/chad/feed/', name: 'Africanews - Chad' },
-        { url: 'https://allafrica.com/tools/headlines/rdf/chad/headlines.rdf', name: 'AllAfrica - Chad' }
+        { url: 'https://www.africanews.com/country/chad/feed/', name: 'Africanews - Chad' }
     ];
 
     const AFRICA_RSS_SOURCES = [
         { url: 'https://www.africanews.com/feed/', name: 'Africanews' },
         { url: 'https://www.theafricareport.com/feed/', name: 'The Africa Report' },
-        { url: 'https://topafricanews.com/feed/', name: 'Top Africa News' },
-        { url: 'https://allafrica.com/tools/headlines/rdf/latest/headlines.rdf', name: 'AllAfrica' },
         { url: 'https://www.jeuneafrique.com/feed/', name: 'Jeune Afrique' },
-        { url: 'https://www.bbc.com/arabic/topics/ck20or7087gt/rss.xml', name: 'BBC Africa (عربي)' }
+        { url: 'https://www.bbc.com/arabic/topics/ck20or7087gt/rss.xml', name: 'BBC Africa' }
     ];
 
     const WORLD_RSS_SOURCES = [
-        { url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', name: 'NYT World' },
-        { url: 'https://www.bbc.com/arabic/index.xml', name: 'BBC Arabic' },
         { url: 'https://www.aljazeera.net/rss', name: 'الجزيرة' },
+        { url: 'https://www.bbc.com/arabic/index.xml', name: 'BBC Arabic' },
         { url: 'https://www.france24.com/ar/rss', name: 'فرانس 24' },
-        { url: 'https://www.reutersagency.com/feed/?best-topics=world-news&post_type=best', name: 'Reuters' },
-        { url: 'https://apnews.com/feed', name: 'AP News' },
-        { url: 'https://www.afp.com/en/news-hub/rss', name: 'AFP' },
-        { url: 'https://news.google.com/rss?hl=ar&gl=SA&ceid=SA:ar', name: 'Google News' }
+        { url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', name: 'NYT World' }
     ];
 
     const SPORTS_RSS_SOURCES = [
-        // الكرة العربية والإقليمية
-        { url: 'https://www.kooora.com/rss.aspx', name: '🌙 كووورة' },
-        { url: 'https://www.filgoal.com/rss/news', name: '🌙 في الجول' },
-        { url: 'https://www.yallakora.com/rss/rss.aspx', name: '🌙 يلا كورة' },
-        { url: 'https://www.hespress.com/sport/feed', name: '🌙 هسبريس رياضة' },
-        { url: 'https://www.foot24.tn/rss.xml', name: '🌙 فوت 24' },
-
-        // الكرة الأوروبية والعالمية
-        { url: 'http://feeds.bbci.co.uk/sport/football/rss.xml', name: '🇪🇺 BBC Football' },
-        { url: 'https://www.skysports.com/rss/12040', name: '🇪🇺 Sky Sports Football' },
-        { url: 'https://www.uefa.com/rssfeed/news/rss.xml', name: '🇪🇺 UEFA News' },
-        { url: 'https://www.espn.com/espn/rss/soccer/news', name: '🌍 ESPN Soccer' },
-        { url: 'https://www.marca.com/rss/en/index.xml', name: '🇪🇺 MARCA English' },
-
-        // الكرة الأفريقية
-        { url: 'https://www.cafonline.com/rss/', name: '🌍 CAF Official' },
-        { url: 'https://www.kingfut.com/feed/', name: '🌍 KingFut Africa' },
-        { url: 'https://www.africanews.com/feed/sport', name: '🌍 Africanews Sport' }
+        { url: 'https://www.aljazeera.net/rss/sports', name: 'الجزيرة رياضة' },
+        { url: 'https://www.france24.com/ar/%D8%B1%D9%8A%D8%A7%D8%B6%D8%A9/rss', name: 'فرانس 24 رياضة' },
+        { url: 'http://feeds.bbci.co.uk/sport/football/rss.xml', name: 'BBC Sport' },
+        { url: 'https://www.espn.com/espn/rss/soccer/news', name: 'ESPN Soccer' }
     ];
 
     const PRESS_RSS_SOURCES = [
         { url: 'https://www.aljazeera.net/rss', name: 'الجزيرة' },
-        { url: 'https://newspapersonline.com/feed/', name: 'Newspapers Online' },
-        { url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', name: 'The New York Times' },
-        { url: 'https://www.theguardian.com/world/rss', name: 'The Guardian' },
-        { url: 'https://feeds.washingtonpost.com/rss/world', name: 'The Washington Post' },
         { url: 'https://www.aawsat.com/rss', name: 'الشرق الأوسط' },
-        { url: 'https://www.lemonde.fr/rss/une.xml', name: 'Le Monde' }
+        { url: 'https://www.lemonde.fr/rss/une.xml', name: 'Le Monde' },
+        { url: 'https://www.theguardian.com/world/rss', name: 'The Guardian' }
     ];
 
-    const RSS2JSON_ENDPOINT = 'https://api.rss2json.com/v1/api.json?rss_url=';
     const OPINION_STORAGE_KEY = 'tchad24_opinion_articles_v1';
     const THEME_STORAGE_KEY = 'tchad24_theme';
     const NOTIFY_STORAGE_KEY = 'tchad24_notify_enabled';
+    const CATEGORY_STORAGE_KEY = 'tchad24_last_category';
     const ADMIN_SESSION_KEY = 'tchad24_is_admin';
     const ADMIN_CREDENTIALS = { username: 'admin', password: 'tchad24' };
 
     /* ======================================================================
-       1. Translations
+       1. Translations & Dynamic Translator
        ====================================================================== */
 
     const translations = {
@@ -117,10 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
             deleteConfirmText: "Delete this article?",
             sourceLabel: "Source",
             notificationsEnabled: "Breaking News Notifications Enabled!",
-            notificationsDisabled: "Notifications Disabled.",
-            articlePublishedText: "Your article has been published below!",
-            adminLoginSuccessText: "Logged in as admin.",
-            adminLoginErrorText: "Incorrect username or password."
+            notificationsDisabled: "Notifications Disabled."
         },
         fr: {
             siteTitle: "Tchad24News",
@@ -152,10 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
             deleteConfirmText: "Supprimer cet article ?",
             sourceLabel: "Source",
             notificationsEnabled: "Notifications d'urgence activées !",
-            notificationsDisabled: "Notifications désactivées.",
-            articlePublishedText: "Votre article a été publié ci-dessous !",
-            adminLoginSuccessText: "Connecté en tant qu'admin.",
-            adminLoginErrorText: "Nom d'utilisateur ou mot de passe incorrect."
+            notificationsDisabled: "Notifications désactivées."
         },
         ar: {
             siteTitle: "تشاد24نيوز",
@@ -187,10 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
             deleteConfirmText: "هل تريد حذف هذا المقال؟",
             sourceLabel: "المصدر",
             notificationsEnabled: "تم تفعيل إشعارات الأخبار العاجلة!",
-            notificationsDisabled: "تم إلغاء تفعيل الإشعارات.",
-            articlePublishedText: "تم نشر مقالتك أدناه!",
-            adminLoginSuccessText: "تم تسجيل الدخول كأدمن.",
-            adminLoginErrorText: "اسم المستخدم أو كلمة المرور غير صحيحة."
+            notificationsDisabled: "تم إلغاء تفعيل الإشعارات."
         }
     };
 
@@ -200,12 +158,25 @@ document.addEventListener('DOMContentLoaded', () => {
         return (translations[currentLang] && translations[currentLang][key]) || translations.en[key] || key;
     }
 
+    async function translateText(text, targetLang) {
+        if (!text || text.trim() === '') return text;
+        try {
+            const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`);
+            const data = await res.json();
+            return data[0].map(item => item[0]).join('');
+        } catch (e) {
+            return text;
+        }
+    }
+
     /* ======================================================================
        2. State & DOM References
        ====================================================================== */
 
+    const savedCategory = localStorage.getItem(CATEGORY_STORAGE_KEY) || 'chad';
+
     const state = {
-        activeCategory: 'chad', // البدء بـ تشاد افتراضياً حسب الترتيب الجديد
+        activeCategory: savedCategory,
         opinionArticles: loadOpinionArticles(),
         lastNotifiedNews: ''
     };
@@ -224,24 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tickerContent = document.getElementById('ticker-content');
 
     /* ======================================================================
-       3. Translation Service
-       ====================================================================== */
-
-    async function translateText(text, targetLang) {
-        if (!text) return text;
-        try {
-            const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`);
-            if (!res.ok) return text;
-            const data = await res.json();
-            if (!Array.isArray(data) || !Array.isArray(data[0])) return text;
-            return data[0].map(item => item[0]).join('');
-        } catch (e) {
-            return text;
-        }
-    }
-
-    /* ======================================================================
-       4. Notifications Toggle Feature
+       3. Notifications
        ====================================================================== */
 
     function initNotifications() {
@@ -264,18 +218,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const permission = await Notification.requestPermission();
             if (permission === 'granted') {
                 localStorage.setItem(NOTIFY_STORAGE_KEY, 'true');
-                notifyBtn.classList.add('active');
+                if (notifyBtn) notifyBtn.classList.add('active');
                 new Notification(t('siteTitle'), { body: t('notificationsEnabled'), icon: '🇹🇩' });
             }
         } else {
             localStorage.setItem(NOTIFY_STORAGE_KEY, 'false');
-            notifyBtn.classList.remove('active');
+            if (notifyBtn) notifyBtn.classList.remove('active');
             alert(t('notificationsDisabled'));
         }
     }
 
     function triggerBreakingNewsNotification(title) {
-        if (!("Notification" in window)) return;
         const isEnabled = localStorage.getItem(NOTIFY_STORAGE_KEY) === 'true';
         if (isEnabled && Notification.permission === 'granted' && title !== state.lastNotifiedNews) {
             state.lastNotifiedNews = title;
@@ -287,97 +240,87 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ======================================================================
-       5. i18n & Theme
+       4. News Fetching Engine (With Fallback Proxy)
        ====================================================================== */
 
-    function setLanguage(lang) {
-        currentLang = lang;
-        localStorage.setItem('preferred_lang', lang);
-        document.documentElement.lang = lang;
-        document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
-
-        document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.lang === lang);
-        });
-
-        const dict = translations[lang] || translations.en;
-
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.dataset.i18n;
-            if (dict[key]) el.textContent = dict[key];
-        });
-
-        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-            const key = el.dataset.i18nPlaceholder;
-            if (dict[key]) el.placeholder = dict[key];
-        });
-
-        categoryBtns.forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.category === state.activeCategory);
-        });
-
-        renderActiveCategory();
-        renderOpinionArticles();
-        loadTickerNews();
+    function stripHtml(html) {
+        const tmp = document.createElement('div');
+        tmp.innerHTML = html || '';
+        return (tmp.textContent || tmp.innerText || '').trim();
     }
 
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
-    });
+    async function fetchOneFeed(source) {
+        try {
+            const primaryUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(source.url)}`;
+            const res = await fetch(primaryUrl);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.status === 'ok' && Array.isArray(data.items) && data.items.length > 0) {
+                    return data.items.map(raw => ({
+                        title: raw.title || '',
+                        description: stripHtml(raw.description).slice(0, 200),
+                        link: raw.link || '',
+                        pubDate: raw.pubDate || '',
+                        source: source.name
+                    }));
+                }
+            }
+        } catch (e) {}
 
-    function applyTheme(theme) {
-        document.body.classList.toggle('dark-mode', theme === 'dark');
+        // Fallback Proxy if RSS2JSON fails
+        try {
+            const fallbackUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(source.url)}`;
+            const res = await fetch(fallbackUrl);
+            const data = await res.json();
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(data.contents, "text/xml");
+            const items = Array.from(xmlDoc.querySelectorAll("item")).slice(0, 10);
+
+            return items.map(item => ({
+                title: item.querySelector("title")?.textContent || '',
+                description: stripHtml(item.querySelector("description")?.textContent || '').slice(0, 200),
+                link: item.querySelector("link")?.textContent || '',
+                pubDate: item.querySelector("pubDate")?.textContent || '',
+                source: source.name
+            }));
+        } catch (e) {
+            return [];
+        }
     }
 
-    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || 'light';
-    applyTheme(savedTheme);
+    async function loadCategoryNews(sourcesArray, categoryKey) {
+        renderEmptyState(newsContainer, t('loadingText'));
 
-    if (themeBtn) {
-        themeBtn.addEventListener('click', () => {
-            const isDark = document.body.classList.toggle('dark-mode');
-            localStorage.setItem(THEME_STORAGE_KEY, isDark ? 'dark' : 'light');
-        });
-    }
-
-    /* ======================================================================
-       6. Category Navigation
-       ====================================================================== */
-
-    categoryBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            categoryBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            state.activeCategory = btn.dataset.category;
-
-            if (state.activeCategory === 'opinion') {
-                opinionSection.style.display = 'block';
-                newsContainer.style.display = 'none';
-            } else {
-                opinionSection.style.display = 'none';
-                newsContainer.style.display = 'grid';
-                renderActiveCategory();
+        const results = await Promise.allSettled(sourcesArray.map(fetchOneFeed));
+        let merged = [];
+        results.forEach(r => {
+            if (r.status === 'fulfilled' && Array.isArray(r.value)) {
+                merged = merged.concat(r.value);
             }
         });
-    });
 
-    function renderActiveCategory() {
-        if (state.activeCategory === 'opinion') return;
+        if (!merged.length) {
+            renderEmptyState(newsContainer, t('emptyNewsText'));
+            return;
+        }
 
-        if (state.activeCategory === 'chad') {
-            loadCategoryNews(CHAD_RSS_SOURCES, 'chad');
-        } else if (state.activeCategory === 'africa') {
-            loadCategoryNews(AFRICA_RSS_SOURCES, 'africa');
-        } else if (state.activeCategory === 'world') {
-            loadCategoryNews(WORLD_RSS_SOURCES, 'world');
-        } else if (state.activeCategory === 'sports') {
-            loadCategoryNews(SPORTS_RSS_SOURCES, 'sports');
-        } else if (state.activeCategory === 'press') {
-            loadCategoryNews(PRESS_RSS_SOURCES, 'press');
+        merged.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+        merged = merged.slice(0, 20);
+
+        const translatedItems = await Promise.all(merged.map(async (item) => {
+            const title = await translateText(item.title, currentLang);
+            const description = await translateText(item.description, currentLang);
+            const source = await translateText(item.source, currentLang);
+            return { ...item, title, description, source };
+        }));
+
+        if (state.activeCategory === categoryKey) {
+            renderNewsList(translatedItems);
         }
     }
 
     /* ======================================================================
-       7. News Fetch & Render
+       5. Render UI
        ====================================================================== */
 
     function clearNode(node) {
@@ -398,61 +341,11 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const d = new Date(dateInput);
             if (isNaN(d.getTime())) return '';
-            const locale = currentLang === 'ar' ? 'ar-TD' : (currentLang === 'fr' ? 'fr-FR' : 'en-US');
-            try {
-                return d.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' });
-            } catch (localeErr) {
-                return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
-            }
+            return d.toLocaleDateString(currentLang === 'ar' ? 'ar-TD' : (currentLang === 'fr' ? 'fr-FR' : 'en-US'), {
+                year: 'numeric', month: 'short', day: 'numeric'
+            });
         } catch (e) {
             return '';
-        }
-    }
-
-    function stripHtml(html) {
-        const tmp = document.createElement('div');
-        tmp.innerHTML = html || '';
-        return (tmp.textContent || tmp.innerText || '').trim();
-    }
-
-    async function fetchOneFeed(source) {
-        const url = `${RSS2JSON_ENDPOINT}${encodeURIComponent(source.url)}`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        if (data.status !== 'ok' || !Array.isArray(data.items)) throw new Error('Bad feed');
-
-        return data.items.map(raw => ({
-            title: raw.title || '',
-            description: stripHtml(raw.description).slice(0, 200),
-            link: raw.link || '',
-            pubDate: raw.pubDate || '',
-            source: source.name
-        }));
-    }
-
-    async function loadCategoryNews(sourcesArray, categoryKey) {
-        renderEmptyState(newsContainer, t('loadingText'));
-
-        const results = await Promise.allSettled(sourcesArray.map(fetchOneFeed));
-        let merged = [];
-        results.forEach(r => {
-            if (r.status === 'fulfilled') merged = merged.concat(r.value);
-        });
-
-        if (categoryKey !== 'sports') {
-            merged.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-        }
-        merged = merged.slice(0, 24);
-
-        merged = await Promise.all(merged.map(async item => ({
-            ...item,
-            title: await translateText(item.title, currentLang),
-            description: await translateText(item.description, currentLang)
-        })));
-
-        if (state.activeCategory === categoryKey) {
-            renderNewsList(merged);
         }
     }
 
@@ -505,42 +398,110 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ======================================================================
-       8. Dynamic Breaking News Ticker & Notifications Trigger
+       6. Ticker & Language Switcher
        ====================================================================== */
 
     async function loadTickerNews() {
-        if (!tickerContent) return;
         try {
-            const [chadFeeds, africaFeeds, worldFeeds] = await Promise.all([
-                fetchOneFeed(CHAD_RSS_SOURCES[0]).catch(() => []),
-                fetchOneFeed(AFRICA_RSS_SOURCES[0]).catch(() => []),
-                fetchOneFeed(WORLD_RSS_SOURCES[0]).catch(() => [])
-            ]);
+            const chadFeeds = await fetchOneFeed(CHAD_RSS_SOURCES[0]).catch(() => []);
+            const africaFeeds = await fetchOneFeed(AFRICA_RSS_SOURCES[0]).catch(() => []);
 
-            const headlineChad = chadFeeds[0] ? `🇹🇩 ${chadFeeds[0].title}` : '';
-            const headlineAfrica = africaFeeds[0] ? `🌍 ${africaFeeds[0].title}` : '';
-            const headlineWorld = worldFeeds[0] ? `🌐 ${worldFeeds[0].title}` : '';
-
-            let combinedText = [headlineChad, headlineAfrica, headlineWorld].filter(Boolean).join('  ـــ  ');
-
-            if (combinedText) {
-                combinedText = await translateText(combinedText, currentLang);
-            }
-
-            tickerContent.textContent = combinedText || t('siteTitle');
-
-            if (headlineChad) {
-                const cleanHeadline = chadFeeds[0].title;
-                triggerBreakingNewsNotification(cleanHeadline);
+            const headlines = [...chadFeeds.slice(0, 2), ...africaFeeds.slice(0, 2)];
+            if (headlines.length) {
+                const titles = await Promise.all(headlines.map(h => translateText(h.title, currentLang)));
+                tickerContent.textContent = titles.join('  ـــ  ');
+                triggerBreakingNewsNotification(titles[0]);
+            } else {
+                tickerContent.textContent = t('siteTitle');
             }
         } catch (e) {
             tickerContent.textContent = t('siteTitle');
         }
     }
 
+    function setLanguage(lang) {
+        currentLang = lang;
+        localStorage.setItem('preferred_lang', lang);
+        document.documentElement.lang = lang;
+        document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.lang === lang);
+        });
+
+        const dict = translations[lang] || translations.en;
+
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.dataset.i18n;
+            if (dict[key]) el.textContent = dict[key];
+        });
+
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.dataset.i18nPlaceholder;
+            if (dict[key]) el.placeholder = dict[key];
+        });
+
+        switchCategoryView(state.activeCategory);
+        renderOpinionArticles();
+        loadTickerNews();
+    }
+
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
+    });
+
+    function switchCategoryView(category) {
+        state.activeCategory = category;
+        localStorage.setItem(CATEGORY_STORAGE_KEY, category);
+
+        categoryBtns.forEach(b => b.classList.toggle('active', b.dataset.category === category));
+
+        if (state.activeCategory === 'opinion') {
+            if (opinionSection) opinionSection.style.display = 'block';
+            if (newsContainer) newsContainer.style.display = 'none';
+        } else {
+            if (opinionSection) opinionSection.style.display = 'none';
+            if (newsContainer) newsContainer.style.display = 'grid';
+            renderActiveCategory();
+        }
+    }
+
+    categoryBtns.forEach(btn => {
+        btn.addEventListener('click', () => switchCategoryView(btn.dataset.category));
+    });
+
+    function renderActiveCategory() {
+        if (state.activeCategory === 'opinion') return;
+
+        const maps = {
+            chad: CHAD_RSS_SOURCES,
+            africa: AFRICA_RSS_SOURCES,
+            world: WORLD_RSS_SOURCES,
+            sports: SPORTS_RSS_SOURCES,
+            press: PRESS_RSS_SOURCES
+        };
+
+        const sources = maps[state.activeCategory] || CHAD_RSS_SOURCES;
+        loadCategoryNews(sources, state.activeCategory);
+    }
+
     /* ======================================================================
-       9. Opinion Articles & Forms
+       7. Theme & Opinion Articles logic
        ====================================================================== */
+
+    function applyTheme(theme) {
+        document.body.classList.toggle('dark-mode', theme === 'dark');
+    }
+
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || 'light';
+    applyTheme(savedTheme);
+
+    if (themeBtn) {
+        themeBtn.addEventListener('click', () => {
+            const isDark = document.body.classList.toggle('dark-mode');
+            localStorage.setItem(THEME_STORAGE_KEY, isDark ? 'dark' : 'light');
+        });
+    }
 
     function loadOpinionArticles() {
         try {
@@ -562,11 +523,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderOpinionArticles() {
+        if (!opinionArticlesList) return;
         clearNode(opinionArticlesList);
+
         if (!state.opinionArticles.length) {
             renderEmptyState(opinionArticlesList, t('emptyOpinionText'));
             return;
         }
+
         state.opinionArticles.forEach(article => {
             const card = document.createElement('article');
             card.className = 'news-card';
@@ -625,29 +589,17 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.add('active');
 
             const tab = btn.dataset.tab;
-            publishForm.style.display = (tab === 'publish') ? 'block' : 'none';
-            adminLogin.style.display = (tab === 'admin') ? 'block' : 'none';
+            if (publishForm) publishForm.style.display = (tab === 'publish') ? 'block' : 'none';
+            if (adminLogin) adminLogin.style.display = (tab === 'admin') ? 'block' : 'none';
         });
     });
 
-    const publishMessage = document.getElementById('publish-message');
-    const adminMessage = document.getElementById('admin-message');
-
-    function showFormMessage(el, text, isError) {
-        if (!el) return;
-        el.textContent = text;
-        el.classList.toggle('error', !!isError);
-        el.classList.toggle('success', !isError);
-        clearTimeout(el._hideTimer);
-        el._hideTimer = setTimeout(() => { el.textContent = ''; }, 4000);
-    }
-
     if (articleForm) {
-        articleForm.addEventListener('submit', async (e) => {
+        articleForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const authorName = document.getElementById('author-name').value.trim();
-            const title = document.getElementById('article-title').value.trim();
-            const body = document.getElementById('article-body').value.trim();
+            const authorName = document.getElementById('author-name')?.value.trim();
+            const title = document.getElementById('article-title')?.value.trim();
+            const body = document.getElementById('article-body')?.value.trim();
 
             if (!authorName || !title || !body) return;
 
@@ -662,29 +614,25 @@ document.addEventListener('DOMContentLoaded', () => {
             saveOpinionArticles();
             renderOpinionArticles();
             articleForm.reset();
-            showFormMessage(publishMessage, t('articlePublishedText'), false);
         });
     }
 
     if (adminForm) {
         adminForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const u = document.getElementById('admin-username').value.trim();
-            const p = document.getElementById('admin-password').value;
+            const u = document.getElementById('admin-username')?.value.trim();
+            const p = document.getElementById('admin-password')?.value;
 
             if (u === ADMIN_CREDENTIALS.username && p === ADMIN_CREDENTIALS.password) {
                 sessionStorage.setItem(ADMIN_SESSION_KEY, 'true');
                 adminForm.reset();
                 renderOpinionArticles();
-                showFormMessage(adminMessage, t('adminLoginSuccessText'), false);
-            } else {
-                showFormMessage(adminMessage, t('adminLoginErrorText'), true);
             }
         });
     }
 
     /* ======================================================================
-       10. Init
+       8. Init
        ====================================================================== */
 
     initNotifications();
