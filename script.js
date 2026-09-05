@@ -4,51 +4,86 @@ document.addEventListener('DOMContentLoaded', () => {
        0. Feeds Configuration
        ====================================================================== */
 
-    const CHAD_RSS_SOURCES = [
-        { url: 'https://www.alwihdainfo.com/feed/', name: 'Alwihda Info' },
-        { url: 'https://tchadinfos.com/feed/', name: 'Tchadinfos' },
-        { url: 'https://journaldutchad.com/feed/', name: 'Journal du Tchad' },
-        { url: 'https://www.jeuneafrique.com/pays/tchad/feed/', name: 'Jeune Afrique - Tchad' },
-        { url: 'https://www.france24.com/fr/tag/tchad/rss', name: 'France 24 - Tchad' },
-        { url: 'https://www.rfi.fr/fr/tag/tchad/rss', name: 'RFI - Tchad' },
-        { url: 'https://www.africanews.com/country/chad/feed/', name: 'Africanews - Chad' }
-    ];
+    // مصادر حسب اللغة
+    const ARABIC_SOURCES = {
+        chad: [
+            { url: 'https://www.alwihdainfo.com/feed/', name: 'Alwihda Info' },
+            { url: 'https://tchadinfos.com/feed/', name: 'Tchadinfos' },
+            { url: 'https://journaldutchad.com/feed/', name: 'Journal du Tchad' }
+        ],
+        africa: [
+            { url: 'https://www.bbc.com/arabic/topics/ck20or7087gt/rss.xml', name: 'BBC Arabic' },
+            { url: 'https://www.aljazeera.net/rss', name: 'الجزيرة' }
+        ],
+        world: [
+            { url: 'https://www.aljazeera.net/rss', name: 'الجزيرة' },
+            { url: 'https://www.bbc.com/arabic/index.xml', name: 'BBC Arabic' },
+            { url: 'https://www.france24.com/ar/rss', name: 'فرانس 24' }
+        ],
+        sports: [
+            { url: 'https://www.aljazeera.net/rss/sports', name: 'الجزيرة رياضة' },
+            { url: 'https://www.france24.com/ar/%D8%B1%D9%8A%D8%A7%D8%B6%D8%A9/rss', name: 'فرانس 24 رياضة' }
+        ]
+    };
 
-    const AFRICA_RSS_SOURCES = [
-        { url: 'https://www.africanews.com/feed/', name: 'Africanews' },
-        { url: 'https://www.theafricareport.com/feed/', name: 'The Africa Report' },
-        { url: 'https://www.jeuneafrique.com/feed/', name: 'Jeune Afrique' },
-        { url: 'https://www.bbc.com/arabic/topics/ck20or7087gt/rss.xml', name: 'BBC Africa' }
-    ];
+    const FRENCH_SOURCES = {
+        chad: [
+            { url: 'https://www.jeuneafrique.com/pays/tchad/feed/', name: 'Jeune Afrique' },
+            { url: 'https://www.france24.com/fr/tag/tchad/rss', name: 'France 24' },
+            { url: 'https://www.rfi.fr/fr/tag/tchad/rss', name: 'RFI' },
+            { url: 'https://www.alwihdainfo.com/feed/', name: 'Alwihda Info' }
+        ],
+        africa: [
+            { url: 'https://www.jeuneafrique.com/feed/', name: 'Jeune Afrique' },
+            { url: 'https://www.africanews.com/feed/', name: 'Africanews' },
+            { url: 'https://www.rfi.fr/fr/afrique/rss', name: 'RFI Afrique' }
+        ],
+        world: [
+            { url: 'https://www.france24.com/fr/rss', name: 'France 24' },
+            { url: 'https://www.lemonde.fr/rss/une.xml', name: 'Le Monde' },
+            { url: 'https://www.rfi.fr/fr/rss', name: 'RFI' }
+        ],
+        sports: [
+            { url: 'https://www.france24.com/fr/sports/rss', name: 'France 24 Sports' },
+            { url: 'https://www.lequipe.fr/rss/actu_rss.xml', name: 'L\'Équipe' },
+            { url: 'http://feeds.bbci.co.uk/sport/football/rss.xml', name: 'BBC Sport' }
+        ]
+    };
 
-    const WORLD_RSS_SOURCES = [
-        { url: 'https://www.aljazeera.net/rss', name: 'الجزيرة' },
-        { url: 'https://www.bbc.com/arabic/index.xml', name: 'BBC Arabic' },
-        { url: 'https://www.france24.com/ar/rss', name: 'فرانس 24' },
-        { url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', name: 'NYT World' }
-    ];
+    const ENGLISH_SOURCES = {
+        chad: [
+            { url: 'https://www.africanews.com/country/chad/feed/', name: 'Africanews Chad' },
+            { url: 'https://www.jeuneafrique.com/pays/tchad/feed/', name: 'Jeune Afrique' }
+        ],
+        africa: [
+            { url: 'https://www.africanews.com/feed/', name: 'Africanews' },
+            { url: 'https://www.theafricareport.com/feed/', name: 'The Africa Report' },
+            { url: 'https://feeds.bbci.co.uk/news/world/africa/rss.xml', name: 'BBC Africa' }
+        ],
+        world: [
+            { url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', name: 'NYT World' },
+            { url: 'https://www.theguardian.com/world/rss', name: 'The Guardian' },
+            { url: 'https://feeds.bbci.co.uk/news/world/rss.xml', name: 'BBC World' }
+        ],
+        sports: [
+            // كرة القدم أولاً
+            { url: 'http://feeds.bbci.co.uk/sport/football/rss.xml', name: 'BBC Football' },
+            { url: 'https://www.espn.com/espn/rss/soccer/news', name: 'ESPN Soccer' },
+            // تنس البطولات الكبرى
+            { url: 'http://feeds.bbci.co.uk/sport/tennis/rss.xml', name: 'BBC Tennis' },
+            { url: 'https://www.espn.com/espn/rss/tennis/news', name: 'ESPN Tennis' },
+            // مصارعة وأخرى
+            { url: 'https://www.espn.com/espn/rss/news', name: 'ESPN Sports' },
+            { url: 'http://feeds.bbci.co.uk/sport/rss.xml', name: 'BBC Sport' }
+        ]
+    };
 
-    const SPORTS_RSS_SOURCES = [
-        { url: 'https://www.aljazeera.net/rss/sports', name: 'الجزيرة رياضة' },
-        { url: 'https://www.france24.com/ar/%D8%B1%D9%8A%D8%A7%D8%B6%D8%A9/rss', name: 'فرانس 24 رياضة' },
-        { url: 'http://feeds.bbci.co.uk/sport/football/rss.xml', name: 'BBC Sport' },
-        { url: 'https://www.espn.com/espn/rss/soccer/news', name: 'ESPN Soccer' }
-    ];
-
-    const PRESS_RSS_SOURCES = [
-        { url: 'https://www.aljazeera.net/rss', name: 'الجزيرة' },
-        { url: 'https://www.aawsat.com/rss', name: 'الشرق الأوسط' },
-        { url: 'https://www.lemonde.fr/rss/une.xml', name: 'Le Monde' },
-        { url: 'https://www.theguardian.com/world/rss', name: 'The Guardian' }
-    ];
-
-    const OPINION_STORAGE_KEY = 'tchad24_opinion_articles_v1';
+    const OPINION_STORAGE_KEY = 'tchad24_opinion_articles_v1'; // لم يعد مستخدماً
     const THEME_STORAGE_KEY = 'tchad24_theme';
     const NOTIFY_STORAGE_KEY = 'tchad24_notify_enabled';
     const CATEGORY_STORAGE_KEY = 'tchad24_last_category';
     const ADMIN_SESSION_KEY = 'tchad24_is_admin';
-    const TRANSLATE_CACHE_KEY = 'tchad24_translate_cache_v2';
-    const ADMIN_CREDENTIALS = { username: 'admin', password: 'tchad24' };
+    const TRANSLATE_CACHE_KEY = 'tchad24_translate_cache_v4';
 
     /* ======================================================================
        1. Translations
@@ -62,27 +97,9 @@ document.addEventListener('DOMContentLoaded', () => {
             catAfrica: "🌍 Africa",
             catWorld: "🌐 World",
             catSports: "⚽ Sports",
-            catPress: "📰 Newspapers",
-            catOpinion: "✍️ Opinion Articles",
-            publishTitle: "Publish Your Article",
-            authorImgLabel: "Author Profile Picture:",
-            authorNamePlaceholder: "Author Name",
-            articleTitlePlaceholder: "Article Title",
-            articleContentPlaceholder: "Write your article here...",
-            publishBtn: "Publish Article",
-            adminLoginBtn: "🔐 Admin Login",
-            publishTabBtn: "✍️ Publish Article",
-            adminLoginTitle: "Admin Login",
-            usernamePlaceholder: "Username",
-            passwordPlaceholder: "Password",
-            loginBtn: "Login",
-            opinionListTitle: "Published Articles",
-            loadingText: "Loading and translating news…",
+            loadingText: "Loading news…",
             emptyNewsText: "No news available right now.",
-            emptyOpinionText: "No opinion articles published yet.",
             readMoreText: "Read more →",
-            deleteBtnText: "Delete",
-            deleteConfirmText: "Delete this article?",
             sourceLabel: "Source",
             notificationsEnabled: "Breaking News Notifications Enabled!",
             notificationsDisabled: "Notifications Disabled."
@@ -94,27 +111,9 @@ document.addEventListener('DOMContentLoaded', () => {
             catAfrica: "🌍 Afrique",
             catWorld: "🌐 Monde",
             catSports: "⚽ Sports",
-            catPress: "📰 Journaux",
-            catOpinion: "✍️ Articles d'opinion",
-            publishTitle: "Publiez votre article",
-            authorImgLabel: "Photo de profil de l'auteur:",
-            authorNamePlaceholder: "Nom de l'auteur",
-            articleTitlePlaceholder: "Titre de l'article",
-            articleContentPlaceholder: "Écrivez votre article ici...",
-            publishBtn: "Publier l'article",
-            adminLoginBtn: "🔐 Connexion Admin",
-            publishTabBtn: "✍️ Publier un article",
-            adminLoginTitle: "Connexion Admin",
-            usernamePlaceholder: "Nom d'utilisateur",
-            passwordPlaceholder: "Mot de passe",
-            loginBtn: "Connexion",
-            opinionListTitle: "Articles publiés",
-            loadingText: "Chargement et traduction des actualités…",
+            loadingText: "Chargement des actualités…",
             emptyNewsText: "Aucune actualité disponible pour le moment.",
-            emptyOpinionText: "Aucun article d'opinion publié pour le moment.",
             readMoreText: "Lire la suite →",
-            deleteBtnText: "Supprimer",
-            deleteConfirmText: "Supprimer cet article ?",
             sourceLabel: "Source",
             notificationsEnabled: "Notifications d'urgence activées !",
             notificationsDisabled: "Notifications désactivées."
@@ -126,27 +125,9 @@ document.addEventListener('DOMContentLoaded', () => {
             catAfrica: "🌍 إفريقيا",
             catWorld: "🌐 العالم",
             catSports: "⚽ الرياضة",
-            catPress: "📰 الصحف",
-            catOpinion: "✍️ مقالات الرأي",
-            publishTitle: "أنشر مقالتك",
-            authorImgLabel: "الصورة الشخصية للكاتب:",
-            authorNamePlaceholder: "اسم الكاتب",
-            articleTitlePlaceholder: "عنوان المقال",
-            articleContentPlaceholder: "اكتب مقالك هنا...",
-            publishBtn: "أنشر مقالتك",
-            adminLoginBtn: "🔐 دخول الأدمن",
-            publishTabBtn: "✍️ أنشر مقالتك",
-            adminLoginTitle: "دخول الأدمن",
-            usernamePlaceholder: "اسم المستخدم",
-            passwordPlaceholder: "كلمة المرور",
-            loginBtn: "دخول",
-            opinionListTitle: "المقالات المنشورة",
-            loadingText: "جارٍ تحميل الأخبار وترجمتها…",
+            loadingText: "جارٍ تحميل الأخبار…",
             emptyNewsText: "لا توجد أخبار متاحة حاليًا.",
-            emptyOpinionText: "لم يُنشر أي مقال رأي بعد.",
             readMoreText: "اقرأ المزيد ←",
-            deleteBtnText: "حذف",
-            deleteConfirmText: "هل تريد حذف هذا المقال؟",
             sourceLabel: "المصدر",
             notificationsEnabled: "تم تفعيل إشعارات الأخبار العاجلة!",
             notificationsDisabled: "تم إلغاء تفعيل الإشعارات."
@@ -159,74 +140,36 @@ document.addEventListener('DOMContentLoaded', () => {
         return (translations[currentLang] && translations[currentLang][key]) || translations.en[key] || key;
     }
 
-    /* ---------- Translation Cache + Optimized Translator ---------- */
-
+    /* ---------- Translation Cache ---------- */
     function loadTranslateCache() {
         try {
             return JSON.parse(sessionStorage.getItem(TRANSLATE_CACHE_KEY) || '{}');
-        } catch {
-            return {};
-        }
+        } catch { return {}; }
     }
-
     function saveTranslateCache(cache) {
         try {
-            // نحتفظ بآخر 300 ترجمة فقط لتجنب امتلاء الذاكرة
             const keys = Object.keys(cache);
-            if (keys.length > 300) {
-                keys.slice(0, keys.length - 300).forEach(k => delete cache[k]);
-            }
+            if (keys.length > 200) keys.slice(0, keys.length - 200).forEach(k => delete cache[k]);
             sessionStorage.setItem(TRANSLATE_CACHE_KEY, JSON.stringify(cache));
         } catch (e) {}
     }
-
     let translateCache = loadTranslateCache();
 
     async function translateText(text, targetLang) {
-        if (!text || text.trim().length < 2) return text;
-
+        if (!text || text.trim().length < 3) return text;
         const cacheKey = `${targetLang}::${text}`;
-        if (translateCache[cacheKey]) {
-            return translateCache[cacheKey];
-        }
+        if (translateCache[cacheKey]) return translateCache[cacheKey];
 
         try {
-            const res = await fetch(
-                `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`
-            );
+            const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`);
             const data = await res.json();
             const translated = data[0].map(item => item[0]).join('');
-
             translateCache[cacheKey] = translated;
             saveTranslateCache(translateCache);
             return translated;
         } catch (e) {
-            return text; // في حالة الفشل نرجع النص الأصلي
+            return text;
         }
-    }
-
-    // ترجمة دفعة صغيرة لتجنب الضغط على Google
-    async function translateBatch(items, targetLang) {
-        const results = [];
-        const BATCH_SIZE = 4;
-
-        for (let i = 0; i < items.length; i += BATCH_SIZE) {
-            const batch = items.slice(i, i + BATCH_SIZE);
-            const translatedBatch = await Promise.all(
-                batch.map(async (item) => {
-                    const title = await translateText(item.title, targetLang);
-                    const description = await translateText(item.description, targetLang);
-                    return { ...item, title, description };
-                })
-            );
-            results.push(...translatedBatch);
-
-            // فاصل صغير بين الدفعات
-            if (i + BATCH_SIZE < items.length) {
-                await new Promise(r => setTimeout(r, 180));
-            }
-        }
-        return results;
     }
 
     /* ======================================================================
@@ -237,20 +180,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const state = {
         activeCategory: savedCategory,
-        opinionArticles: loadOpinionArticles(),
         lastNotifiedNews: '',
         isLoading: false
     };
 
     const newsContainer = document.getElementById('news-container');
-    const opinionSection = document.getElementById('opinion-section');
-    const opinionArticlesList = document.getElementById('opinion-articles-list');
     const categoryBtns = document.querySelectorAll('.category-btn');
-    const subTabBtns = document.querySelectorAll('.sub-tab-btn');
-    const publishForm = document.getElementById('publish-form-container');
-    const adminLogin = document.getElementById('admin-login-container');
-    const articleForm = document.getElementById('article-form');
-    const adminForm = document.getElementById('admin-form');
     const themeBtn = document.getElementById('theme-toggle');
     const notifyBtn = document.getElementById('notify-toggle');
     const tickerContent = document.getElementById('ticker-content');
@@ -269,22 +204,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function toggleNotifications() {
         if (!("Notification" in window)) {
-            alert("Your browser does not support web notifications.");
+            alert("Your browser does not support notifications.");
             return;
         }
-
         const currentlyEnabled = localStorage.getItem(NOTIFY_STORAGE_KEY) === 'true';
-
         if (!currentlyEnabled) {
             const permission = await Notification.requestPermission();
             if (permission === 'granted') {
                 localStorage.setItem(NOTIFY_STORAGE_KEY, 'true');
-                if (notifyBtn) notifyBtn.classList.add('active');
+                notifyBtn?.classList.add('active');
                 new Notification(t('siteTitle'), { body: t('notificationsEnabled') });
             }
         } else {
             localStorage.setItem(NOTIFY_STORAGE_KEY, 'false');
-            if (notifyBtn) notifyBtn.classList.remove('active');
+            notifyBtn?.classList.remove('active');
             alert(t('notificationsDisabled'));
         }
     }
@@ -309,14 +242,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchOneFeed(source) {
         try {
-            const primaryUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(source.url)}`;
-            const res = await fetch(primaryUrl);
+            const url = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(source.url)}`;
+            const res = await fetch(url);
             if (res.ok) {
                 const data = await res.json();
-                if (data.status === 'ok' && Array.isArray(data.items) && data.items.length > 0) {
-                    return data.items.slice(0, 8).map(raw => ({
+                if (data.status === 'ok' && Array.isArray(data.items)) {
+                    return data.items.slice(0, 6).map(raw => ({
                         title: raw.title || '',
-                        description: stripHtml(raw.description).slice(0, 180),
+                        description: stripHtml(raw.description).slice(0, 150),
                         link: raw.link || '',
                         pubDate: raw.pubDate || '',
                         source: source.name
@@ -327,16 +260,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Fallback
         try {
-            const fallbackUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(source.url)}`;
-            const res = await fetch(fallbackUrl);
+            const fallback = `https://api.allorigins.win/get?url=${encodeURIComponent(source.url)}`;
+            const res = await fetch(fallback);
             const data = await res.json();
             const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(data.contents, "text/xml");
-            const items = Array.from(xmlDoc.querySelectorAll("item")).slice(0, 8);
-
-            return items.map(item => ({
+            const xml = parser.parseFromString(data.contents, "text/xml");
+            return Array.from(xml.querySelectorAll("item")).slice(0, 6).map(item => ({
                 title: item.querySelector("title")?.textContent || '',
-                description: stripHtml(item.querySelector("description")?.textContent || '').slice(0, 180),
+                description: stripHtml(item.querySelector("description")?.textContent || '').slice(0, 150),
                 link: item.querySelector("link")?.textContent || '',
                 pubDate: item.querySelector("pubDate")?.textContent || '',
                 source: source.name
@@ -346,14 +277,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function loadCategoryNews(sourcesArray, categoryKey) {
+    function getSourcesForLang(category) {
+        if (currentLang === 'ar') return ARABIC_SOURCES[category] || ARABIC_SOURCES.chad;
+        if (currentLang === 'fr') return FRENCH_SOURCES[category] || FRENCH_SOURCES.chad;
+        return ENGLISH_SOURCES[category] || ENGLISH_SOURCES.chad;
+    }
+
+    async function loadCategoryNews(categoryKey) {
         if (state.isLoading) return;
         state.isLoading = true;
-
         renderEmptyState(newsContainer, t('loadingText'));
 
+        const sources = getSourcesForLang(categoryKey);
+
         try {
-            const results = await Promise.allSettled(sourcesArray.map(fetchOneFeed));
+            const results = await Promise.allSettled(sources.map(fetchOneFeed));
             let merged = [];
             results.forEach(r => {
                 if (r.status === 'fulfilled' && Array.isArray(r.value)) {
@@ -372,15 +310,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // ترتيب + تقليل العدد
             merged.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-            merged = merged.slice(0, 14);
+            merged = merged.slice(0, 12);
 
-            // ترجمة على دفعات
-            const translatedItems = await translateBatch(merged, currentLang);
+            // ترجمة فقط للعربية
+            let finalItems = merged;
+            if (currentLang === 'ar') {
+                finalItems = await Promise.all(merged.map(async item => ({
+                    ...item,
+                    title: await translateText(item.title, 'ar'),
+                    description: await translateText(item.description, 'ar')
+                })));
+            }
 
             if (state.activeCategory === categoryKey) {
-                renderNewsList(translatedItems);
+                renderNewsList(finalItems);
             }
         } catch (err) {
             renderEmptyState(newsContainer, t('emptyNewsText'));
@@ -390,7 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ======================================================================
-       5. Render UI
+       5. Render
        ====================================================================== */
 
     function clearNode(node) {
@@ -400,7 +344,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderEmptyState(container, message) {
         clearNode(container);
-        if (!container) return;
         const p = document.createElement('p');
         p.className = 'empty-state';
         p.textContent = message;
@@ -412,12 +355,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const d = new Date(dateInput);
             if (isNaN(d.getTime())) return '';
             return d.toLocaleDateString(
-                currentLang === 'ar' ? 'ar-TD' : (currentLang === 'fr' ? 'fr-FR' : 'en-US'),
+                currentLang === 'ar' ? 'ar-TD' : currentLang === 'fr' ? 'fr-FR' : 'en-US',
                 { year: 'numeric', month: 'short', day: 'numeric' }
             );
-        } catch {
-            return '';
-        }
+        } catch { return ''; }
     }
 
     function createNewsCard(item) {
@@ -441,7 +382,6 @@ document.addEventListener('DOMContentLoaded', () => {
         footer.className = 'news-card-footer';
 
         const date = document.createElement('span');
-        date.className = 'news-date';
         date.textContent = formatDate(item.pubDate);
         footer.appendChild(date);
 
@@ -461,7 +401,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderNewsList(items) {
         clearNode(newsContainer);
-        if (!items || !items.length) {
+        if (!items?.length) {
             renderEmptyState(newsContainer, t('emptyNewsText'));
             return;
         }
@@ -469,27 +409,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ======================================================================
-       6. Ticker & Language
+       6. Ticker (عاجل) - محدث باستمرار
+       ترتيب الأولوية: تشاد → أفريقيا → العالم → الرياضة
        ====================================================================== */
 
     async function loadTickerNews() {
         try {
-            const results = await Promise.allSettled([
-                fetchOneFeed(CHAD_RSS_SOURCES[0]),
-                fetchOneFeed(AFRICA_RSS_SOURCES[0])
-            ]);
+            const priority = ['chad', 'africa', 'world', 'sports'];
+            let allHeadlines = [];
 
-            let headlines = [];
-            results.forEach(r => {
-                if (r.status === 'fulfilled' && Array.isArray(r.value)) {
-                    headlines = headlines.concat(r.value.slice(0, 2));
+            for (const cat of priority) {
+                const sources = getSourcesForLang(cat).slice(0, 2);
+                const results = await Promise.allSettled(sources.map(fetchOneFeed));
+                results.forEach(r => {
+                    if (r.status === 'fulfilled' && Array.isArray(r.value)) {
+                        allHeadlines = allHeadlines.concat(r.value.slice(0, 2));
+                    }
+                });
+                if (allHeadlines.length >= 8) break;
+            }
+
+            if (allHeadlines.length) {
+                allHeadlines.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+                let titles = allHeadlines.slice(0, 8).map(h => h.title);
+
+                if (currentLang === 'ar') {
+                    titles = await Promise.all(titles.map(t => translateText(t, 'ar')));
                 }
-            });
 
-            if (headlines.length) {
-                const titles = await Promise.all(
-                    headlines.map(h => translateText(h.title, currentLang))
-                );
                 tickerContent.textContent = titles.join('  ـــ  ');
                 triggerBreakingNewsNotification(titles[0]);
             } else {
@@ -500,31 +447,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // تحديث العاجل كل 5 دقائق
+    setInterval(loadTickerNews, 5 * 60 * 1000);
+
+    /* ======================================================================
+       7. Language & Categories
+       ====================================================================== */
+
     function setLanguage(lang) {
         currentLang = lang;
         localStorage.setItem('preferred_lang', lang);
         document.documentElement.lang = lang;
-        document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+        document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
 
         document.querySelectorAll('.lang-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.lang === lang);
         });
 
         const dict = translations[lang] || translations.en;
-
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.dataset.i18n;
             if (dict[key]) el.textContent = dict[key];
         });
 
-        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-            const key = el.dataset.i18nPlaceholder;
-            if (dict[key]) el.placeholder = dict[key];
-        });
-
-        // إعادة تحميل الأخبار باللغة الجديدة
         switchCategoryView(state.activeCategory);
-        renderOpinionArticles();
         loadTickerNews();
     }
 
@@ -537,44 +483,16 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem(CATEGORY_STORAGE_KEY, category);
 
         categoryBtns.forEach(b => b.classList.toggle('active', b.dataset.category === category));
-
-        if (category === 'opinion') {
-            if (opinionSection) opinionSection.style.display = 'block';
-            if (newsContainer) newsContainer.style.display = 'none';
-        } else {
-            if (opinionSection) opinionSection.style.display = 'none';
-            if (newsContainer) newsContainer.style.display = 'grid';
-            renderActiveCategory();
-        }
+        loadCategoryNews(category);
     }
 
     categoryBtns.forEach(btn => {
         btn.addEventListener('click', () => switchCategoryView(btn.dataset.category));
     });
 
-    function renderActiveCategory() {
-        if (state.activeCategory === 'opinion') return;
-
-        const maps = {
-            chad: CHAD_RSS_SOURCES,
-            africa: AFRICA_RSS_SOURCES,
-            world: WORLD_RSS_SOURCES,
-            sports: SPORTS_RSS_SOURCES,
-            press: PRESS_RSS_SOURCES
-        };
-
-        const sources = maps[state.activeCategory] || CHAD_RSS_SOURCES;
-        loadCategoryNews(sources, state.activeCategory);
-    }
-
     /* ======================================================================
-       7. Theme & Opinion
+       8. Theme
        ====================================================================== */
-
-    function applyTheme(theme) {
-        document.body.classList.toggle('dark-mode', theme === 'dark');
-        updateThemeIcon();
-    }
 
     function updateThemeIcon() {
         const isDark = document.body.classList.contains('dark-mode');
@@ -587,7 +505,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || 'light';
-    applyTheme(savedTheme);
+    document.body.classList.toggle('dark-mode', savedTheme === 'dark');
+    updateThemeIcon();
 
     if (themeBtn) {
         themeBtn.addEventListener('click', () => {
@@ -597,159 +516,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function loadOpinionArticles() {
-        try {
-            const raw = localStorage.getItem(OPINION_STORAGE_KEY);
-            return raw ? JSON.parse(raw) : [];
-        } catch {
-            return [];
-        }
-    }
-
-    function saveOpinionArticles() {
-        try {
-            localStorage.setItem(OPINION_STORAGE_KEY, JSON.stringify(state.opinionArticles));
-        } catch (e) {
-            console.warn('Storage full');
-        }
-    }
-
-    function isAdmin() {
-        return sessionStorage.getItem(ADMIN_SESSION_KEY) === 'true';
-    }
-
-    function renderOpinionArticles() {
-        if (!opinionArticlesList) return;
-        clearNode(opinionArticlesList);
-
-        if (!state.opinionArticles.length) {
-            renderEmptyState(opinionArticlesList, t('emptyOpinionText'));
-            return;
-        }
-
-        state.opinionArticles.forEach(article => {
-            const card = document.createElement('article');
-            card.className = 'news-card';
-
-            const authorRow = document.createElement('div');
-            authorRow.className = 'news-card-author';
-
-            const avatar = document.createElement('img');
-            avatar.src = article.authorImg || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><rect width="32" height="32" fill="%23002b66"/></svg>';
-            avatar.alt = article.authorName || '';
-            authorRow.appendChild(avatar);
-
-            const authorName = document.createElement('strong');
-            authorName.textContent = article.authorName;
-            authorRow.appendChild(authorName);
-
-            card.appendChild(authorRow);
-
-            const title = document.createElement('h3');
-            title.textContent = article.title;
-            card.appendChild(title);
-
-            const body = document.createElement('p');
-            body.textContent = article.body;
-            card.appendChild(body);
-
-            const footer = document.createElement('div');
-            footer.className = 'news-card-footer';
-
-            const date = document.createElement('span');
-            date.className = 'news-date';
-            date.textContent = formatDate(article.date);
-            footer.appendChild(date);
-
-            if (isAdmin()) {
-                const delBtn = document.createElement('button');
-                delBtn.className = 'delete-btn';
-                delBtn.textContent = t('deleteBtnText');
-                delBtn.addEventListener('click', () => {
-                    if (!confirm(t('deleteConfirmText'))) return;
-                    state.opinionArticles = state.opinionArticles.filter(a => a.id !== article.id);
-                    saveOpinionArticles();
-                    renderOpinionArticles();
-                });
-                footer.appendChild(delBtn);
-            }
-
-            card.appendChild(footer);
-            opinionArticlesList.appendChild(card);
-        });
-    }
-
-    function addOpinionArticle(authorName, title, body, authorImg = '') {
-        state.opinionArticles.unshift({
-            id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-            authorName,
-            title,
-            body,
-            authorImg,
-            date: new Date().toISOString()
-        });
-        saveOpinionArticles();
-        renderOpinionArticles();
-        if (articleForm) articleForm.reset();
-    }
-
-    subTabBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            subTabBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            const tab = btn.dataset.tab;
-            if (publishForm) publishForm.style.display = (tab === 'publish') ? 'block' : 'none';
-            if (adminLogin) adminLogin.style.display = (tab === 'admin') ? 'block' : 'none';
-        });
-    });
-
-    if (articleForm) {
-        articleForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            const authorName = document.getElementById('author-name')?.value.trim();
-            const title = document.getElementById('article-title')?.value.trim();
-            const body = document.getElementById('article-body')?.value.trim();
-            const authorImgInput = document.getElementById('author-img');
-
-            if (!authorName || !title || !body) return;
-
-            if (authorImgInput && authorImgInput.files && authorImgInput.files[0]) {
-                const file = authorImgInput.files[0];
-                if (file.size > 1.5 * 1024 * 1024) {
-                    alert(currentLang === 'ar' ? 'حجم الصورة كبير جداً' : 'Image too large');
-                    return;
-                }
-                const reader = new FileReader();
-                reader.onload = (event) => addOpinionArticle(authorName, title, body, event.target.result);
-                reader.onerror = () => addOpinionArticle(authorName, title, body, '');
-                reader.readAsDataURL(file);
-            } else {
-                addOpinionArticle(authorName, title, body, '');
-            }
-        });
-    }
-
-    if (adminForm) {
-        adminForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const u = document.getElementById('admin-username')?.value.trim();
-            const p = document.getElementById('admin-password')?.value;
-
-            if (u === ADMIN_CREDENTIALS.username && p === ADMIN_CREDENTIALS.password) {
-                sessionStorage.setItem(ADMIN_SESSION_KEY, 'true');
-                adminForm.reset();
-                renderOpinionArticles();
-                alert(currentLang === 'ar' ? 'تم تسجيل الدخول بنجاح' : 'Login successful');
-            } else {
-                alert(currentLang === 'ar' ? 'بيانات الدخول غير صحيحة' : 'Incorrect credentials');
-            }
-        });
-    }
-
     /* ======================================================================
-       8. Init
+       9. Init
        ====================================================================== */
 
     initNotifications();
