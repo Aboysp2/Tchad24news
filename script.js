@@ -1,5 +1,29 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+    // --- Polyfill آمن لـ Promise.allSettled (بعض متصفحات التلفاز القديمة لا تدعمه) ---
+    if (typeof Promise.allSettled !== 'function') {
+        Promise.allSettled = function (promises) {
+            return Promise.all(promises.map(p =>
+                Promise.resolve(p).then(
+                    value => ({ status: 'fulfilled', value }),
+                    reason => ({ status: 'rejected', reason })
+                )
+            ));
+        };
+    }
+
+    // --- طبقة آمنة للتخزين (localStorage قد يكون معطلاً/مقيّدًا على بعض أجهزة التلفاز) ---
+    const safeStorage = {
+        get(key, fallback = null) {
+            try { return localStorage.getItem(key) ?? fallback; }
+            catch (e) { return fallback; }
+        },
+        set(key, value) {
+            try { localStorage.setItem(key, value); }
+            catch (e) { /* تجاهل بصمت */ }
+        }
+    };
+
     const SOURCES = {
         ar: {
             chad: [
@@ -134,14 +158,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    let currentLang = localStorage.getItem('preferred_lang') || 'ar';
+    let currentLang = safeStorage.get('preferred_lang', 'ar');
 
     function t(key) {
         return translations[currentLang]?.[key] || translations.en[key] || key;
     }
 
     function getCache() {
-        try { return JSON.parse(sessionStorage.getItem(CACHE_KEY) || '{}'); } 
+        try { return JSON.parse(sessionStorage.getItem(CACHE_KEY) || '{}'); }
         catch { return {}; }
     }
 
@@ -162,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const state = {
-        activeCategory: localStorage.getItem(CATEGORY_STORAGE_KEY) || 'chad',
+        activeCategory: safeStorage.get(CATEGORY_STORAGE_KEY, 'chad'),
         isLoading: false
     };
 
@@ -173,19 +197,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const tickerContent = document.getElementById('ticker-content');
 
     function initNotifications() {
-        const enabled = localStorage.getItem(NOTIFY_STORAGE_KEY) === 'true';
+        const enabled = safeStorage.get(NOTIFY_STORAGE_KEY) === 'true';
         if (notifyBtn) {
             notifyBtn.classList.toggle('active', enabled);
             notifyBtn.addEventListener('click', async () => {
                 if (!("Notification" in window)) return alert("Not supported");
-                if (localStorage.getItem(NOTIFY_STORAGE_KEY) === 'true') {
-                    localStorage.setItem(NOTIFY_STORAGE_KEY, 'false');
+                if (safeStorage.get(NOTIFY_STORAGE_KEY) === 'true') {
+                    safeStorage.set(NOTIFY_STORAGE_KEY, 'false');
                     notifyBtn.classList.remove('active');
                     alert(t('notificationsDisabled'));
                 } else {
                     const perm = await Notification.requestPermission();
                     if (perm === 'granted') {
-                        localStorage.setItem(NOTIFY_STORAGE_KEY, 'true');
+                        safeStorage.set(NOTIFY_STORAGE_KEY, 'true');
                         notifyBtn.classList.add('active');
                         new Notification(t('siteTitle'), { body: t('notificationsEnabled') });
                     }
@@ -239,35 +263,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function fetchAndUpdate(category, cacheKey) {
-        const sources = SOURCES[currentLang]?.[category] || SOURCES.ar.chad;
-        const results = await Promise.allSettled(sources.map(fetchFeed));
+        try {
+            const sources = SOURCES[currentLang]?.[category] || SOURCES.ar.chad;
+            const results = await Promise.allSettled(sources.map(fetchFeed));
 
-        let items = [];
-        results.forEach(r => {
-            if (r.status === 'fulfilled') items = items.concat(r.value);
-        });
+            let items = [];
+            results.forEach(r => {
+                if (r.status === 'fulfilled') items = items.concat(r.value);
+            });
 
-        if (!items.length) {
+            if (!items.length) {
+                if (state.activeCategory === category) renderEmpty(t('emptyNewsText'));
+                return;
+            }
+
+            items.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+            items = items.slice(0, 12);
+
+            if (currentLang === 'ar') {
+                items = await Promise.all(items.map(async item => ({
+                    ...item,
+                    title: await translate(item.title),
+                    description: await translate(item.description)
+                })));
+            }
+
+            setCache(cacheKey, items);
+
+            if (state.activeCategory === category) {
+                renderNews(items);
+            }
+        } catch (e) {
             if (state.activeCategory === category) renderEmpty(t('emptyNewsText'));
-            return;
-        }
-
-        // الأحدث ثم الأحدث
-        items.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-        items = items.slice(0, 12);
-
-        if (currentLang === 'ar') {
-            items = await Promise.all(items.map(async item => ({
-                ...item,
-                title: await translate(item.title),
-                description: await translate(item.description)
-            })));
-        }
-
-        setCache(cacheKey, items);
-
-        if (state.activeCategory === category) {
-            renderNews(items);
         }
     }
 
@@ -359,7 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function setLanguage(lang) {
         currentLang = lang;
-        localStorage.setItem('preferred_lang', lang);
+        safeStorage.set('preferred_lang', lang);
         document.documentElement.lang = lang;
         document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
 
@@ -382,7 +409,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function switchCategory(cat) {
         state.activeCategory = cat;
-        localStorage.setItem(CATEGORY_STORAGE_KEY, cat);
+        safeStorage.set(CATEGORY_STORAGE_KEY, cat);
         categoryBtns.forEach(b => b.classList.toggle('active', b.dataset.category === cat));
         loadCategory(cat);
     }
@@ -401,13 +428,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || 'light';
+    const savedTheme = safeStorage.get(THEME_STORAGE_KEY, 'light');
     document.body.classList.toggle('dark-mode', savedTheme === 'dark');
     updateThemeIcon();
 
     themeBtn?.addEventListener('click', () => {
         const isDark = document.body.classList.toggle('dark-mode');
-        localStorage.setItem(THEME_STORAGE_KEY, isDark ? 'dark' : 'light');
+        safeStorage.set(THEME_STORAGE_KEY, isDark ? 'dark' : 'light');
         updateThemeIcon();
     });
 
