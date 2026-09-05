@@ -30,34 +30,33 @@ document.addEventListener('DOMContentLoaded', () => {
             ]
         },
         fr: {
-    chad: [
-        { url: 'https://www.france24.com/fr/tag/tchad/rss', name: 'France 24' },
-        { url: 'https://www.rfi.fr/fr/tag/tchad/rss', name: 'RFI' },
-        { url: 'https://www.jeuneafrique.com/pays/tchad/feed/', name: 'Jeune Afrique' },
-        { url: 'https://www.alwihdainfo.com/feed/', name: 'Alwihda Info' },
-        { url: 'https://tchadinfos.com/feed/', name: 'Tchadinfos' }
-    ],
-    africa: [
-        { url: 'https://www.jeuneafrique.com/feed/', name: 'Jeune Afrique' },
-        { url: 'https://www.africanews.com/feed/', name: 'Africanews' },
-        { url: 'https://www.rfi.fr/fr/afrique/rss', name: 'RFI Afrique' },
-        { url: 'https://www.france24.com/fr/afrique/rss', name: 'France 24 Afrique' },
-        { url: 'https://allafrica.com/tools/headlines/rdf/latest/headlines.rdf', name: 'AllAfrica' }
-    ],
-    world: [
-        { url: 'https://www.france24.com/fr/rss', name: 'France 24' },
-        { url: 'https://www.rfi.fr/fr/rss', name: 'RFI' },
-        { url: 'https://www.france24.com/fr/monde/rss', name: 'France 24 Monde' },
-        { url: 'https://www.africanews.com/feed/', name: 'Africanews' },
-        { url: 'https://feeds.bbci.co.uk/news/world/rss.xml', name: 'BBC World' }
-    ],
-    sports: [
-        { url: 'https://www.france24.com/fr/sports/rss', name: 'France 24 Sports' },
-        { url: 'https://www.lequipe.fr/rss/actu_rss.xml', name: "L'Équipe" },
-        { url: 'https://www.rmcsport.bfmtv.com/rss/football/', name: 'RMC Sport' },
-        { url: 'http://feeds.bbci.co.uk/sport/football/rss.xml', name: 'BBC Football' }
-    ]
-} 
+            chad: [
+                { url: 'https://www.france24.com/fr/tag/tchad/rss', name: 'France 24' },
+                { url: 'https://www.rfi.fr/fr/tag/tchad/rss', name: 'RFI' },
+                { url: 'https://www.jeuneafrique.com/pays/tchad/feed/', name: 'Jeune Afrique' },
+                { url: 'https://www.alwihdainfo.com/feed/', name: 'Alwihda Info' },
+                { url: 'https://tchadinfos.com/feed/', name: 'Tchadinfos' }
+            ],
+            africa: [
+                { url: 'https://www.jeuneafrique.com/feed/', name: 'Jeune Afrique' },
+                { url: 'https://www.africanews.com/feed/', name: 'Africanews' },
+                { url: 'https://www.rfi.fr/fr/afrique/rss', name: 'RFI Afrique' },
+                { url: 'https://www.france24.com/fr/afrique/rss', name: 'France 24 Afrique' },
+                { url: 'https://allafrica.com/tools/headlines/rdf/latest/headlines.rdf', name: 'AllAfrica' }
+            ],
+            world: [
+                { url: 'https://www.france24.com/fr/rss', name: 'France 24' },
+                { url: 'https://www.lemonde.fr/rss/une.xml', name: 'Le Monde' },
+                { url: 'https://www.rfi.fr/fr/rss', name: 'RFI' },
+                { url: 'https://www.lefigaro.fr/rss/figaro_actualites.xml', name: 'Le Figaro' }
+            ],
+            sports: [
+                { url: 'https://www.france24.com/fr/sports/rss', name: 'France 24 Sports' },
+                { url: 'https://www.lequipe.fr/rss/actu_rss.xml', name: "L'Équipe" },
+                { url: 'https://www.rmcsport.bfmtv.com/rss/football/', name: 'RMC Sport' },
+                { url: 'http://feeds.bbci.co.uk/sport/football/rss.xml', name: 'BBC Football' }
+            ]
+        },
         en: {
             chad: [
                 { url: 'https://www.africanews.com/country/chad/feed/', name: 'Africanews Chad' },
@@ -414,4 +413,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initNotifications();
     setLanguage(currentLang);
-});
+}); 
