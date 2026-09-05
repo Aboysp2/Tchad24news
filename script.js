@@ -1,9 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    /* ======================================================================
-       0. مصادر الأخبار
-       ====================================================================== */
-
     const SOURCES = {
         ar: {
             chad: [
@@ -16,15 +12,21 @@ document.addEventListener('DOMContentLoaded', () => {
             ],
             africa: [
                 { url: 'https://www.bbc.com/arabic/topics/ck20or7087gt/rss.xml', name: 'BBC Arabic' },
-                { url: 'https://www.aljazeera.net/rss', name: 'الجزيرة' }
+                { url: 'https://www.aljazeera.net/rss', name: 'الجزيرة' },
+                { url: 'https://www.africanews.com/feed/', name: 'Africanews' },
+                { url: 'https://www.france24.com/ar/afrique/rss', name: 'فرانس 24 أفريقيا' }
             ],
             world: [
                 { url: 'https://www.aljazeera.net/rss', name: 'الجزيرة' },
-                { url: 'https://www.bbc.com/arabic/index.xml', name: 'BBC Arabic' }
+                { url: 'https://www.bbc.com/arabic/index.xml', name: 'BBC Arabic' },
+                { url: 'https://www.france24.com/ar/rss', name: 'فرانس 24' },
+                { url: 'https://www.aawsat.com/rss', name: 'الشرق الأوسط' }
             ],
             sports: [
                 { url: 'https://www.aljazeera.net/rss/sports', name: 'الجزيرة رياضة' },
-                { url: 'https://www.france24.com/ar/%D8%B1%D9%8A%D8%A7%D8%B6%D8%A9/rss', name: 'فرانس 24 رياضة' }
+                { url: 'https://www.france24.com/ar/%D8%B1%D9%8A%D8%A7%D8%B6%D8%A9/rss', name: 'فرانس 24 رياضة' },
+                { url: 'https://www.beinsports.com/ar/rss', name: 'beIN Sports' },
+                { url: 'https://www.yallakora.com/rss', name: 'يلاكورة' }
             ]
         },
         fr: {
@@ -37,15 +39,21 @@ document.addEventListener('DOMContentLoaded', () => {
             ],
             africa: [
                 { url: 'https://www.jeuneafrique.com/feed/', name: 'Jeune Afrique' },
-                { url: 'https://www.africanews.com/feed/', name: 'Africanews' }
+                { url: 'https://www.africanews.com/feed/', name: 'Africanews' },
+                { url: 'https://www.rfi.fr/fr/afrique/rss', name: 'RFI Afrique' },
+                { url: 'https://www.france24.com/fr/afrique/rss', name: 'France 24 Afrique' }
             ],
             world: [
                 { url: 'https://www.france24.com/fr/rss', name: 'France 24' },
-                { url: 'https://www.lemonde.fr/rss/une.xml', name: 'Le Monde' }
+                { url: 'https://www.lemonde.fr/rss/une.xml', name: 'Le Monde' },
+                { url: 'https://www.rfi.fr/fr/rss', name: 'RFI' },
+                { url: 'https://www.lefigaro.fr/rss/figaro_actualites.xml', name: 'Le Figaro' }
             ],
             sports: [
                 { url: 'https://www.france24.com/fr/sports/rss', name: 'France 24 Sports' },
-                { url: 'https://www.lequipe.fr/rss/actu_rss.xml', name: "L'Équipe" }
+                { url: 'https://www.lequipe.fr/rss/actu_rss.xml', name: "L'Équipe" },
+                { url: 'https://www.rmcsport.bfmtv.com/rss/football/', name: 'RMC Sport' },
+                { url: 'http://feeds.bbci.co.uk/sport/football/rss.xml', name: 'BBC Football' }
             ]
         },
         en: {
@@ -55,16 +63,21 @@ document.addEventListener('DOMContentLoaded', () => {
             ],
             africa: [
                 { url: 'https://www.africanews.com/feed/', name: 'Africanews' },
-                { url: 'https://www.theafricareport.com/feed/', name: 'The Africa Report' }
+                { url: 'https://www.theafricareport.com/feed/', name: 'The Africa Report' },
+                { url: 'https://feeds.bbci.co.uk/news/world/africa/rss.xml', name: 'BBC Africa' },
+                { url: 'https://www.france24.com/en/africa/rss', name: 'France 24 Africa' }
             ],
             world: [
                 { url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', name: 'NYT World' },
-                { url: 'https://feeds.bbci.co.uk/news/world/rss.xml', name: 'BBC World' }
+                { url: 'https://feeds.bbci.co.uk/news/world/rss.xml', name: 'BBC World' },
+                { url: 'https://www.theguardian.com/world/rss', name: 'The Guardian' },
+                { url: 'https://www.aljazeera.com/xml/rss/all.xml', name: 'Al Jazeera English' }
             ],
             sports: [
                 { url: 'http://feeds.bbci.co.uk/sport/football/rss.xml', name: 'BBC Football' },
                 { url: 'https://www.espn.com/espn/rss/soccer/news', name: 'ESPN Soccer' },
-                { url: 'http://feeds.bbci.co.uk/sport/tennis/rss.xml', name: 'BBC Tennis' }
+                { url: 'http://feeds.bbci.co.uk/sport/tennis/rss.xml', name: 'BBC Tennis' },
+                { url: 'https://www.espn.com/espn/rss/news', name: 'ESPN Sports' }
             ]
         }
     };
@@ -72,11 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const THEME_STORAGE_KEY = 'tchad24_theme';
     const NOTIFY_STORAGE_KEY = 'tchad24_notify_enabled';
     const CATEGORY_STORAGE_KEY = 'tchad24_last_category';
-    const CACHE_KEY = 'tchad24_news_cache_v5';
-
-    /* ======================================================================
-       1. Translations
-       ====================================================================== */
+    const CACHE_KEY = 'tchad24_news_cache_v6';
 
     const translations = {
         en: {
@@ -129,14 +138,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return translations[currentLang]?.[key] || translations.en[key] || key;
     }
 
-    /* ======================================================================
-       2. Cache
-       ====================================================================== */
-
     function getCache() {
-        try {
-            return JSON.parse(sessionStorage.getItem(CACHE_KEY) || '{}');
-        } catch { return {}; }
+        try { return JSON.parse(sessionStorage.getItem(CACHE_KEY) || '{}'); } 
+        catch { return {}; }
     }
 
     function setCache(key, data) {
@@ -147,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {}
     }
 
-    function getCached(key, maxAge = 8 * 60 * 1000) {
+    function getCached(key, maxAge = 7 * 60 * 1000) {
         const cache = getCache();
         if (cache[key] && (Date.now() - cache[key].time < maxAge)) {
             return cache[key].data;
@@ -155,14 +159,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return null;
     }
 
-    /* ======================================================================
-       3. State & DOM
-       ====================================================================== */
-
     const state = {
         activeCategory: localStorage.getItem(CATEGORY_STORAGE_KEY) || 'chad',
-        isLoading: false,
-        lastNotified: ''
+        isLoading: false
     };
 
     const newsContainer = document.getElementById('news-container');
@@ -170,10 +169,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeBtn = document.getElementById('theme-toggle');
     const notifyBtn = document.getElementById('notify-toggle');
     const tickerContent = document.getElementById('ticker-content');
-
-    /* ======================================================================
-       4. Notifications
-       ====================================================================== */
 
     function initNotifications() {
         const enabled = localStorage.getItem(NOTIFY_STORAGE_KEY) === 'true';
@@ -197,10 +192,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    /* ======================================================================
-       5. Fetching
-       ====================================================================== */
-
     function stripHtml(html) {
         const tmp = document.createElement('div');
         tmp.innerHTML = html || '';
@@ -214,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!res.ok) throw new Error();
             const data = await res.json();
             if (data.status !== 'ok' || !data.items) throw new Error();
-            return data.items.slice(0, 5).map(item => ({
+            return data.items.slice(0, 6).map(item => ({
                 title: item.title || '',
                 description: stripHtml(item.description).slice(0, 140),
                 link: item.link || '',
@@ -236,7 +227,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cached) {
             renderNews(cached);
             state.isLoading = false;
-            // تحديث في الخلفية
             fetchAndUpdate(category, cacheKey);
             return;
         }
@@ -260,10 +250,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // الأحدث ثم الأحدث
         items.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
         items = items.slice(0, 12);
 
-        // ترجمة فقط للعربية
         if (currentLang === 'ar') {
             items = await Promise.all(items.map(async item => ({
                 ...item,
@@ -279,7 +269,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ترجمة مع كاش
     const translateCache = {};
     async function translate(text) {
         if (!text || text.length < 4) return text;
@@ -294,10 +283,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return text;
         }
     }
-
-    /* ======================================================================
-       6. Render
-       ====================================================================== */
 
     function renderEmpty(msg) {
         newsContainer.innerHTML = `<p class="empty-state">${msg}</p>`;
@@ -331,10 +316,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch { return ''; }
     }
 
-    /* ======================================================================
-       7. Ticker (عاجل)
-       ====================================================================== */
-
     async function loadTicker() {
         try {
             const cats = ['chad', 'africa', 'world', 'sports'];
@@ -344,29 +325,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 const sources = (SOURCES[currentLang]?.[cat] || []).slice(0, 1);
                 const results = await Promise.allSettled(sources.map(fetchFeed));
                 results.forEach(r => {
-                    if (r.status === 'fulfilled') headlines = headlines.concat(r.value.slice(0, 2));
+                    if (r.status === 'fulfilled' && Array.isArray(r.value)) {
+                        headlines = headlines.concat(r.value.slice(0, 2));
+                    }
                 });
-                if (headlines.length >= 6) break;
+                if (headlines.length >= 8) break;
             }
 
-            if (headlines.length) {
-                headlines.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-                let titles = headlines.slice(0, 6).map(h => h.title);
-                if (currentLang === 'ar') {
-                    titles = await Promise.all(titles.map(translate));
-                }
-                tickerContent.textContent = titles.join('  ـــ  ');
+            if (headlines.length === 0) {
+                tickerContent.textContent = t('siteTitle');
+                return;
             }
-        } catch {
+
+            headlines.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+            let titles = headlines.slice(0, 7).map(h => h.title);
+
+            if (currentLang === 'ar') {
+                titles = await Promise.all(titles.map(title => translate(title)));
+            }
+
+            // إعادة تشغيل الأنيميشن
+            tickerContent.style.animation = 'none';
+            tickerContent.textContent = titles.join('  ـــ  ');
+            void tickerContent.offsetWidth;
+            tickerContent.style.animation = '';
+        } catch (e) {
             tickerContent.textContent = t('siteTitle');
         }
     }
 
     setInterval(loadTicker, 6 * 60 * 1000);
-
-    /* ======================================================================
-       8. Language & Categories
-       ====================================================================== */
 
     function setLanguage(lang) {
         currentLang = lang;
@@ -402,10 +390,6 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', () => switchCategory(btn.dataset.category));
     });
 
-    /* ======================================================================
-       9. Theme
-       ====================================================================== */
-
     function updateThemeIcon() {
         const isDark = document.body.classList.contains('dark-mode');
         const moon = document.querySelector('.icon-moon');
@@ -425,10 +409,6 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem(THEME_STORAGE_KEY, isDark ? 'dark' : 'light');
         updateThemeIcon();
     });
-
-    /* ======================================================================
-       10. Init
-       ====================================================================== */
 
     initNotifications();
     setLanguage(currentLang);
