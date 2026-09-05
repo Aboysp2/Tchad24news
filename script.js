@@ -1,22 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // ==========================================
-    // 1. مصادر الأخبار المصححة والمحدثة (SOURCES)
-    // ==========================================
     const SOURCES = {
         ar: {
             chad: [
-                { url: 'https://www.alwihdainfo.com/feed/', name: 'الوحدة إنفو' },
-                { url: 'https://tchadinfos.com/feed/', name: 'تشاد إنفوس' },
-                { url: 'https://journaldutchad.com/feed/', name: 'جورنال دو تشاد' },
-                { url: 'https://www.jeuneafrique.com/pays/tchad/feed/', name: 'جون أفريك - تشاد' },
-                { url: 'https://www.france24.com/fr/tag/tchad/rss', name: 'فرانس 24 - تشاد' },
-                { url: 'https://www.rfi.fr/fr/tag/tchad/rss', name: 'RFI - تشاد' }
+                { url: 'https://www.alwihdainfo.com/feed/', name: 'Alwihda Info' },
+                { url: 'https://tchadinfos.com/feed/', name: 'Tchadinfos' },
+                { url: 'https://journaldutchad.com/feed/', name: 'Journal du Tchad' },
+                { url: 'https://www.jeuneafrique.com/pays/tchad/feed/', name: 'Jeune Afrique - Tchad' },
+                { url: 'https://www.france24.com/fr/tag/tchad/rss', name: 'France 24 - Tchad' },
+                { url: 'https://www.rfi.fr/fr/tag/tchad/rss', name: 'RFI - Tchad' }
             ],
             africa: [
                 { url: 'https://www.bbc.com/arabic/topics/ck20or7087gt/rss.xml', name: 'BBC Arabic - أفريقيا' },
                 { url: 'https://www.france24.com/ar/afrique/rss', name: 'فرانس 24 أفريقيا' },
-                { url: 'https://fr.africanews.com/feed/rss', name: 'أفريكا نيوز' },
                 { url: 'https://www.rfi.fr/fr/afrique/rss', name: 'RFI Afrique' },
                 { url: 'https://allafrica.com/tools/headlines/rdf/latest/headlines.rdf', name: 'AllAfrica' }
             ],
@@ -24,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 { url: 'https://www.aljazeera.net/rss', name: 'الجزيرة' },
                 { url: 'https://www.bbc.com/arabic/index.xml', name: 'BBC Arabic' },
                 { url: 'https://www.france24.com/ar/rss', name: 'فرانس 24' },
-                { url: 'https://aawsat.com/rss', name: 'الشرق الأوسط' }
+                { url: 'https://www.aawsat.com/rss', name: 'الشرق الأوسط' }
             ],
             sports: [
                 { url: 'https://www.aljazeera.net/rss/sports', name: 'الجزيرة رياضة' },
@@ -34,41 +30,41 @@ document.addEventListener('DOMContentLoaded', () => {
             ]
         },
         fr: {
-            chad: [
-                { url: 'https://www.france24.com/fr/tag/tchad/rss', name: 'France 24' },
-                { url: 'https://www.rfi.fr/fr/tag/tchad/rss', name: 'RFI' },
-                { url: 'https://www.jeuneafrique.com/pays/tchad/feed/', name: 'Jeune Afrique' },
-                { url: 'https://www.alwihdainfo.com/feed/', name: 'Alwihda Info' },
-                { url: 'https://tchadinfos.com/feed/', name: 'Tchadinfos' }
-            ],
-            africa: [
-                { url: 'https://www.jeuneafrique.com/feed/', name: 'Jeune Afrique' },
-                { url: 'https://fr.africanews.com/feed/rss', name: 'Africanews' },
-                { url: 'https://www.rfi.fr/fr/afrique/rss', name: 'RFI Afrique' },
-                { url: 'https://www.france24.com/fr/afrique/rss', name: 'France 24 Afrique' },
-                { url: 'https://allafrica.com/tools/headlines/rdf/latest/headlines.rdf', name: 'AllAfrica' }
-            ],
-            world: [
-                { url: 'https://www.france24.com/fr/rss', name: 'France 24' },
-                { url: 'https://www.rfi.fr/fr/rss', name: 'RFI' },
-                { url: 'https://www.lemonde.fr/rss/une.xml', name: 'Le Monde' },
-                { url: 'https://www.lefigaro.fr/rss/figaro_actualites.xml', name: 'Le Figaro' },
-                { url: 'https://fr.africanews.com/feed/rss', name: 'Africanews Monde' }
-            ],
-            sports: [
-                { url: 'https://www.france24.com/fr/sports/rss', name: 'France 24 Sports' },
-                { url: 'https://www.lequipe.fr/rss/actu_rss.xml', name: "L'Équipe" },
-                { url: 'https://www.rmcsport.bfmtv.com/rss/football/', name: 'RMC Sport' },
-                { url: 'https://feeds.bbci.co.uk/sport/football/rss.xml', name: 'BBC Football' }
-            ]
-        },
+    chad: [
+        { url: 'https://www.france24.com/fr/tag/tchad/rss', name: 'France 24' },
+        { url: 'https://www.rfi.fr/fr/tag/tchad/rss', name: 'RFI' },
+        { url: 'https://www.jeuneafrique.com/pays/tchad/feed/', name: 'Jeune Afrique' },
+        { url: 'https://www.alwihdainfo.com/feed/', name: 'Alwihda Info' },
+        { url: 'https://tchadinfos.com/feed/', name: 'Tchadinfos' }
+    ],
+    africa: [
+        { url: 'https://www.jeuneafrique.com/feed/', name: 'Jeune Afrique' },
+        { url: 'https://www.africanews.com/feed/', name: 'Africanews' },
+        { url: 'https://www.rfi.fr/fr/afrique/rss', name: 'RFI Afrique' },
+        { url: 'https://www.france24.com/fr/afrique/rss', name: 'France 24 Afrique' },
+        { url: 'https://allafrica.com/tools/headlines/rdf/latest/headlines.rdf', name: 'AllAfrica' }
+    ],
+    world: [
+        { url: 'https://www.france24.com/fr/rss', name: 'France 24' },
+        { url: 'https://www.rfi.fr/fr/rss', name: 'RFI' },
+        { url: 'https://www.france24.com/fr/monde/rss', name: 'France 24 Monde' },
+        { url: 'https://www.africanews.com/feed/', name: 'Africanews' },
+        { url: 'https://feeds.bbci.co.uk/news/world/rss.xml', name: 'BBC World' }
+    ],
+    sports: [
+        { url: 'https://www.france24.com/fr/sports/rss', name: 'France 24 Sports' },
+        { url: 'https://www.lequipe.fr/rss/actu_rss.xml', name: "L'Équipe" },
+        { url: 'https://www.rmcsport.bfmtv.com/rss/football/', name: 'RMC Sport' },
+        { url: 'http://feeds.bbci.co.uk/sport/football/rss.xml', name: 'BBC Football' }
+    ]
+},
         en: {
             chad: [
-                { url: 'https://www.africanews.com/feed/rss', name: 'Africanews Chad' },
+                { url: 'https://www.africanews.com/country/chad/feed/', name: 'Africanews Chad' },
                 { url: 'https://www.jeuneafrique.com/pays/tchad/feed/', name: 'Jeune Afrique' }
             ],
             africa: [
-                { url: 'https://www.africanews.com/feed/rss', name: 'Africanews' },
+                { url: 'https://www.africanews.com/feed/', name: 'Africanews' },
                 { url: 'https://www.theafricareport.com/feed/', name: 'The Africa Report' },
                 { url: 'https://feeds.bbci.co.uk/news/world/africa/rss.xml', name: 'BBC Africa' },
                 { url: 'https://www.france24.com/en/africa/rss', name: 'France 24 Africa' },
@@ -81,21 +77,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 { url: 'https://www.aljazeera.com/xml/rss/all.xml', name: 'Al Jazeera English' }
             ],
             sports: [
-                { url: 'https://feeds.bbci.co.uk/sport/football/rss.xml', name: 'BBC Football' },
+                { url: 'http://feeds.bbci.co.uk/sport/football/rss.xml', name: 'BBC Football' },
                 { url: 'https://www.espn.com/espn/rss/soccer/news', name: 'ESPN Soccer' },
-                { url: 'https://feeds.bbci.co.uk/sport/tennis/rss.xml', name: 'BBC Tennis' },
+                { url: 'http://feeds.bbci.co.uk/sport/tennis/rss.xml', name: 'BBC Tennis' },
                 { url: 'https://www.espn.com/espn/rss/news', name: 'ESPN Sports' }
             ]
         }
     };
 
-    // ==========================================
-    // 2. المفاتيح والمصفوفات والنصوص (TRANSLATIONS)
-    // ==========================================
     const THEME_STORAGE_KEY = 'tchad24_theme';
     const NOTIFY_STORAGE_KEY = 'tchad24_notify_enabled';
     const CATEGORY_STORAGE_KEY = 'tchad24_last_category';
-    const CACHE_KEY = 'tchad24_news_cache_v8';
+    const CACHE_KEY = 'tchad24_news_cache_v7';
 
     const translations = {
         en: {
@@ -148,9 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return translations[currentLang]?.[key] || translations.en[key] || key;
     }
 
-    // ==========================================
-    // 3. التخزين المؤقت (CACHE SYSTEM)
-    // ==========================================
     function getCache() {
         try { return JSON.parse(sessionStorage.getItem(CACHE_KEY) || '{}'); } 
         catch { return {}; }
@@ -183,9 +173,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const notifyBtn = document.getElementById('notify-toggle');
     const tickerContent = document.getElementById('ticker-content');
 
-    // ==========================================
-    // 4. نظام الإشعارات (NOTIFICATIONS)
-    // ==========================================
     function initNotifications() {
         const enabled = localStorage.getItem(NOTIFY_STORAGE_KEY) === 'true';
         if (notifyBtn) {
@@ -214,18 +201,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return (tmp.textContent || '').trim();
     }
 
-    // ==========================================
-    // 5. محرك جلب الخلاصات وتجاوز الحظر (FETCH RSS)
-    // ==========================================
     async function fetchFeed(source) {
-        // المحاولة الأولى: استخدام API rss2json المباشر
         try {
             const url = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(source.url)}`;
             const res = await fetch(url);
             if (!res.ok) throw new Error();
             const data = await res.json();
             if (data.status !== 'ok' || !data.items) throw new Error();
-            
             return data.items.slice(0, 6).map(item => ({
                 title: item.title || '',
                 description: stripHtml(item.description).slice(0, 140),
@@ -234,32 +216,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 source: source.name
             }));
         } catch {
-            // المحاولة الثانية (احتياطية): استخدام بروكسي allorigins لتجاوز قيود CORS
-            try {
-                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(source.url)}`;
-                const response = await fetch(proxyUrl);
-                const data = await response.json();
-                
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(data.contents, "text/xml");
-                const items = Array.from(xmlDoc.querySelectorAll("item")).slice(0, 6);
-
-                return items.map(item => ({
-                    title: item.querySelector("title")?.textContent || '',
-                    description: stripHtml(item.querySelector("description")?.textContent || '').slice(0, 140),
-                    link: item.querySelector("link")?.textContent || '',
-                    pubDate: item.querySelector("pubDate")?.textContent || '',
-                    source: source.name
-                }));
-            } catch (err) {
-                return [];
-            }
+            return [];
         }
     }
 
-    // ==========================================
-    // 6. تحميل وإدارة الأخبار (LOAD NEWS)
-    // ==========================================
     async function loadCategory(category) {
         if (state.isLoading) return;
         state.isLoading = true;
@@ -293,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // الترتيب من الأحدث إلى الأقدم
+        // الأحدث ثم الأحدث
         items.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
         items = items.slice(0, 12);
 
@@ -312,9 +272,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ==========================================
-    // 7. خدمة الترجمة الآلية (TRANSLATE)
-    // ==========================================
     const translateCache = {};
     async function translate(text) {
         if (!text || text.length < 4) return text;
@@ -330,17 +287,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ==========================================
-    // 8. عرض الأخبار في الصفحة (RENDER)
-    // ==========================================
     function renderEmpty(msg) {
-        if (newsContainer) newsContainer.innerHTML = `<p class="empty-state">${msg}</p>`;
+        newsContainer.innerHTML = `<p class="empty-state">${msg}</p>`;
     }
 
     function renderNews(items) {
         if (!items.length) return renderEmpty(t('emptyNewsText'));
-        if (!newsContainer) return;
-
         newsContainer.innerHTML = '';
         items.forEach(item => {
             const card = document.createElement('article');
@@ -367,11 +319,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch { return ''; }
     }
 
-    // ==========================================
-    // 9. شريط الأخبار العاجلة (BREAKING TICKER)
-    // ==========================================
     async function loadTicker() {
-        if (!tickerContent) return;
         try {
             const cats = ['chad', 'africa', 'world', 'sports'];
             let headlines = [];
@@ -410,9 +358,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setInterval(loadTicker, 6 * 60 * 1000);
 
-    // ==========================================
-    // 10. تبديل اللغات والفئات والمظهر (EVENTS)
-    // ==========================================
     function setLanguage(lang) {
         currentLang = lang;
         localStorage.setItem('preferred_lang', lang);
@@ -467,9 +412,6 @@ document.addEventListener('DOMContentLoaded', () => {
         updateThemeIcon();
     });
 
-    // ==========================================
-    // 11. التشغيل المباشر عند التحميل
-    // ==========================================
     initNotifications();
     setLanguage(currentLang);
 });
