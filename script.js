@@ -45,11 +45,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 { url: 'https://allafrica.com/tools/headlines/rdf/latest/headlines.rdf', name: 'AllAfrica' }
             ],
             world: [
-                { url: 'https://www.france24.com/fr/rss', name: 'France 24' },
-                { url: 'https://www.lemonde.fr/rss/une.xml', name: 'Le Monde' },
-                { url: 'https://www.rfi.fr/fr/rss', name: 'RFI' },
-                { url: 'https://www.lefigaro.fr/rss/figaro_actualites.xml', name: 'Le Figaro' }
-            ],
+    { url: 'https://www.france24.com/fr/rss', name: 'France 24' },
+    { url: 'https://www.rfi.fr/fr/rss', name: 'RFI' },
+    { url: 'https://www.france24.com/fr/monde/rss', name: 'France 24 Monde' },
+    { url: 'https://www.africanews.com/feed/', name: 'Africanews' },
+    { url: 'https://feeds.bbci.co.uk/news/world/rss.xml', name: 'BBC World' }
+],
             sports: [
                 { url: 'https://www.france24.com/fr/sports/rss', name: 'France 24 Sports' },
                 { url: 'https://www.lequipe.fr/rss/actu_rss.xml', name: "L'Équipe" },
