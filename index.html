@@ -41,7 +41,7 @@
         </div>
     </header>
 
-    <!-- Ticker -->
+    <!-- Breaking News Ticker -->
     <div class="ticker-wrap">
         <div class="ticker-title" data-i18n="tickerTitle">عاجل</div>
         <div class="ticker-container">
@@ -49,64 +49,18 @@
         </div>
     </div>
 
-    <!-- Categories -->
+    <!-- Categories (بدون الصحف ومقالات الرأي) -->
     <nav class="categories-nav">
         <button class="category-btn active" data-category="chad" data-i18n="catChad">🇹🇩 تشاد</button>
         <button class="category-btn" data-category="africa" data-i18n="catAfrica">🌍 إفريقيا</button>
         <button class="category-btn" data-category="world" data-i18n="catWorld">🌐 العالم</button>
         <button class="category-btn" data-category="sports" data-i18n="catSports">⚽ الرياضة</button>
-        <button class="category-btn" data-category="press" data-i18n="catPress">📰 الصحف</button>
-        <button class="category-btn" data-category="opinion" data-i18n="catOpinion">✍️ مقالات الرأي</button>
     </nav>
 
     <main>
-        <!-- News -->
-        <section id="news-container" class="news-grid"></section>
-
-        <!-- Opinion Section -->
-        <section id="opinion-section" style="display:none;">
-            <div class="sub-tabs">
-                <button class="sub-tab-btn active" data-tab="publish" data-i18n="publishTabBtn">✍️ أنشر مقالتك</button>
-                <button class="sub-tab-btn" data-tab="admin" data-i18n="adminLoginBtn">🔐 دخول الأدمن</button>
-            </div>
-
-            <h2 class="section-title" data-i18n="opinionListTitle">المقالات المنشورة</h2>
-            <div id="opinion-articles-list" class="news-grid"></div>
-
-            <!-- Publish Form -->
-            <div id="publish-form-container">
-                <h2 data-i18n="publishTitle">أنشر مقالتك</h2>
-                <form id="article-form">
-                    <div class="form-group">
-                        <label data-i18n="authorImgLabel">الصورة الشخصية للكاتب:</label>
-                        <input type="file" id="author-img" accept="image/*">
-                    </div>
-                    <div class="form-group">
-                        <input type="text" id="author-name" data-i18n-placeholder="authorNamePlaceholder" placeholder="اسم الكاتب" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" id="article-title" data-i18n-placeholder="articleTitlePlaceholder" placeholder="عنوان المقال" required>
-                    </div>
-                    <div class="form-group">
-                        <textarea id="article-body" data-i18n-placeholder="articleContentPlaceholder" placeholder="اكتب مقالك هنا..." rows="6" required></textarea>
-                    </div>
-                    <button type="submit" class="submit-btn" data-i18n="publishBtn">أنشر مقالتك</button>
-                </form>
-            </div>
-
-            <!-- Admin Login -->
-            <div id="admin-login-container" style="display:none;">
-                <h2 data-i18n="adminLoginTitle">دخول الأدمن</h2>
-                <form id="admin-form">
-                    <div class="form-group">
-                        <input type="text" id="admin-username" data-i18n-placeholder="usernamePlaceholder" placeholder="اسم المستخدم" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="password" id="admin-password" data-i18n-placeholder="passwordPlaceholder" placeholder="كلمة المرور" required>
-                    </div>
-                    <button type="submit" class="submit-btn" data-i18n="loginBtn">دخول</button>
-                </form>
-            </div>
+        <!-- News Container -->
+        <section id="news-container" class="news-grid">
+            <!-- الأخبار تظهر هنا -->
         </section>
     </main>
 
