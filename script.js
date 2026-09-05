@@ -11,10 +11,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 { url: 'https://www.rfi.fr/fr/tag/tchad/rss', name: 'RFI - Tchad' }
             ],
             africa: [
-                { url: 'https://www.bbc.com/arabic/topics/ck20or7087gt/rss.xml', name: 'BBC Arabic' },
-                { url: 'https://www.aljazeera.net/rss', name: 'الجزيرة' },
-                { url: 'https://www.africanews.com/feed/', name: 'Africanews' },
-                { url: 'https://www.france24.com/ar/afrique/rss', name: 'فرانس 24 أفريقيا' }
+                { url: 'https://www.bbc.com/arabic/topics/ck20or7087gt/rss.xml', name: 'BBC Arabic - أفريقيا' },
+                { url: 'https://www.france24.com/ar/afrique/rss', name: 'فرانس 24 أفريقيا' },
+                { url: 'https://www.rfi.fr/fr/afrique/rss', name: 'RFI Afrique' },
+                { url: 'https://allafrica.com/tools/headlines/rdf/latest/headlines.rdf', name: 'AllAfrica' }
             ],
             world: [
                 { url: 'https://www.aljazeera.net/rss', name: 'الجزيرة' },
@@ -41,7 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 { url: 'https://www.jeuneafrique.com/feed/', name: 'Jeune Afrique' },
                 { url: 'https://www.africanews.com/feed/', name: 'Africanews' },
                 { url: 'https://www.rfi.fr/fr/afrique/rss', name: 'RFI Afrique' },
-                { url: 'https://www.france24.com/fr/afrique/rss', name: 'France 24 Afrique' }
+                { url: 'https://www.france24.com/fr/afrique/rss', name: 'France 24 Afrique' },
+                { url: 'https://allafrica.com/tools/headlines/rdf/latest/headlines.rdf', name: 'AllAfrica' }
             ],
             world: [
                 { url: 'https://www.france24.com/fr/rss', name: 'France 24' },
@@ -65,7 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 { url: 'https://www.africanews.com/feed/', name: 'Africanews' },
                 { url: 'https://www.theafricareport.com/feed/', name: 'The Africa Report' },
                 { url: 'https://feeds.bbci.co.uk/news/world/africa/rss.xml', name: 'BBC Africa' },
-                { url: 'https://www.france24.com/en/africa/rss', name: 'France 24 Africa' }
+                { url: 'https://www.france24.com/en/africa/rss', name: 'France 24 Africa' },
+                { url: 'https://allafrica.com/tools/headlines/rdf/latest/headlines.rdf', name: 'AllAfrica' }
             ],
             world: [
                 { url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', name: 'NYT World' },
@@ -85,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const THEME_STORAGE_KEY = 'tchad24_theme';
     const NOTIFY_STORAGE_KEY = 'tchad24_notify_enabled';
     const CATEGORY_STORAGE_KEY = 'tchad24_last_category';
-    const CACHE_KEY = 'tchad24_news_cache_v6';
+    const CACHE_KEY = 'tchad24_news_cache_v7';
 
     const translations = {
         en: {
@@ -344,7 +346,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 titles = await Promise.all(titles.map(title => translate(title)));
             }
 
-            // إعادة تشغيل الأنيميشن
             tickerContent.style.animation = 'none';
             tickerContent.textContent = titles.join('  ـــ  ');
             void tickerContent.offsetWidth;
