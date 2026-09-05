@@ -47,10 +47,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const NOTIFY_STORAGE_KEY = 'tchad24_notify_enabled';
     const CATEGORY_STORAGE_KEY = 'tchad24_last_category';
     const ADMIN_SESSION_KEY = 'tchad24_is_admin';
+    const TRANSLATE_CACHE_KEY = 'tchad24_translate_cache_v2';
     const ADMIN_CREDENTIALS = { username: 'admin', password: 'tchad24' };
 
     /* ======================================================================
-       1. Translations & Dynamic Translator
+       1. Translations
        ====================================================================== */
 
     const translations = {
@@ -158,19 +159,78 @@ document.addEventListener('DOMContentLoaded', () => {
         return (translations[currentLang] && translations[currentLang][key]) || translations.en[key] || key;
     }
 
-    async function translateText(text, targetLang) {
-        if (!text || text.trim() === '') return text;
+    /* ---------- Translation Cache + Optimized Translator ---------- */
+
+    function loadTranslateCache() {
         try {
-            const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`);
-            const data = await res.json();
-            return data[0].map(item => item[0]).join('');
-        } catch (e) {
-            return text;
+            return JSON.parse(sessionStorage.getItem(TRANSLATE_CACHE_KEY) || '{}');
+        } catch {
+            return {};
         }
     }
 
+    function saveTranslateCache(cache) {
+        try {
+            // نحتفظ بآخر 300 ترجمة فقط لتجنب امتلاء الذاكرة
+            const keys = Object.keys(cache);
+            if (keys.length > 300) {
+                keys.slice(0, keys.length - 300).forEach(k => delete cache[k]);
+            }
+            sessionStorage.setItem(TRANSLATE_CACHE_KEY, JSON.stringify(cache));
+        } catch (e) {}
+    }
+
+    let translateCache = loadTranslateCache();
+
+    async function translateText(text, targetLang) {
+        if (!text || text.trim().length < 2) return text;
+
+        const cacheKey = `${targetLang}::${text}`;
+        if (translateCache[cacheKey]) {
+            return translateCache[cacheKey];
+        }
+
+        try {
+            const res = await fetch(
+                `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`
+            );
+            const data = await res.json();
+            const translated = data[0].map(item => item[0]).join('');
+
+            translateCache[cacheKey] = translated;
+            saveTranslateCache(translateCache);
+            return translated;
+        } catch (e) {
+            return text; // في حالة الفشل نرجع النص الأصلي
+        }
+    }
+
+    // ترجمة دفعة صغيرة لتجنب الضغط على Google
+    async function translateBatch(items, targetLang) {
+        const results = [];
+        const BATCH_SIZE = 4;
+
+        for (let i = 0; i < items.length; i += BATCH_SIZE) {
+            const batch = items.slice(i, i + BATCH_SIZE);
+            const translatedBatch = await Promise.all(
+                batch.map(async (item) => {
+                    const title = await translateText(item.title, targetLang);
+                    const description = await translateText(item.description, targetLang);
+                    return { ...item, title, description };
+                })
+            );
+            results.push(...translatedBatch);
+
+            // فاصل صغير بين الدفعات
+            if (i + BATCH_SIZE < items.length) {
+                await new Promise(r => setTimeout(r, 180));
+            }
+        }
+        return results;
+    }
+
     /* ======================================================================
-       2. State & DOM References
+       2. State & DOM
        ====================================================================== */
 
     const savedCategory = localStorage.getItem(CATEGORY_STORAGE_KEY) || 'chad';
@@ -178,7 +238,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const state = {
         activeCategory: savedCategory,
         opinionArticles: loadOpinionArticles(),
-        lastNotifiedNews: ''
+        lastNotifiedNews: '',
+        isLoading: false
     };
 
     const newsContainer = document.getElementById('news-container');
@@ -219,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (permission === 'granted') {
                 localStorage.setItem(NOTIFY_STORAGE_KEY, 'true');
                 if (notifyBtn) notifyBtn.classList.add('active');
-                new Notification(t('siteTitle'), { body: t('notificationsEnabled'), icon: '🇹🇩' });
+                new Notification(t('siteTitle'), { body: t('notificationsEnabled') });
             }
         } else {
             localStorage.setItem(NOTIFY_STORAGE_KEY, 'false');
@@ -232,15 +293,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const isEnabled = localStorage.getItem(NOTIFY_STORAGE_KEY) === 'true';
         if (isEnabled && Notification.permission === 'granted' && title !== state.lastNotifiedNews) {
             state.lastNotifiedNews = title;
-            new Notification(`${t('tickerTitle')}: ${t('siteTitle')}`, {
-                body: title,
-                icon: '🇹🇩'
-            });
+            new Notification(`${t('tickerTitle')}: ${t('siteTitle')}`, { body: title });
         }
     }
 
     /* ======================================================================
-       4. News Fetching Engine (With Fallback Proxy)
+       4. News Fetching
        ====================================================================== */
 
     function stripHtml(html) {
@@ -256,9 +314,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (res.ok) {
                 const data = await res.json();
                 if (data.status === 'ok' && Array.isArray(data.items) && data.items.length > 0) {
-                    return data.items.map(raw => ({
+                    return data.items.slice(0, 8).map(raw => ({
                         title: raw.title || '',
-                        description: stripHtml(raw.description).slice(0, 200),
+                        description: stripHtml(raw.description).slice(0, 180),
                         link: raw.link || '',
                         pubDate: raw.pubDate || '',
                         source: source.name
@@ -267,18 +325,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (e) {}
 
-        // Fallback Proxy if RSS2JSON fails
+        // Fallback
         try {
             const fallbackUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(source.url)}`;
             const res = await fetch(fallbackUrl);
             const data = await res.json();
             const parser = new DOMParser();
             const xmlDoc = parser.parseFromString(data.contents, "text/xml");
-            const items = Array.from(xmlDoc.querySelectorAll("item")).slice(0, 10);
+            const items = Array.from(xmlDoc.querySelectorAll("item")).slice(0, 8);
 
             return items.map(item => ({
                 title: item.querySelector("title")?.textContent || '',
-                description: stripHtml(item.querySelector("description")?.textContent || '').slice(0, 200),
+                description: stripHtml(item.querySelector("description")?.textContent || '').slice(0, 180),
                 link: item.querySelector("link")?.textContent || '',
                 pubDate: item.querySelector("pubDate")?.textContent || '',
                 source: source.name
@@ -289,36 +347,45 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function loadCategoryNews(sourcesArray, categoryKey) {
+        if (state.isLoading) return;
+        state.isLoading = true;
+
         renderEmptyState(newsContainer, t('loadingText'));
 
-        const results = await Promise.allSettled(sourcesArray.map(fetchOneFeed));
-        let merged = [];
-        results.forEach(r => {
-            if (r.status === 'fulfilled' && Array.isArray(r.value)) {
-                merged = merged.concat(r.value);
+        try {
+            const results = await Promise.allSettled(sourcesArray.map(fetchOneFeed));
+            let merged = [];
+            results.forEach(r => {
+                if (r.status === 'fulfilled' && Array.isArray(r.value)) {
+                    merged = merged.concat(r.value);
+                }
+            });
+
+            if (state.activeCategory !== categoryKey) {
+                state.isLoading = false;
+                return;
             }
-        });
 
-        // منع عرض أخبار فئة قديمة إذا غيّر المستخدم التصنيف بسرعة
-        if (state.activeCategory !== categoryKey) return;
+            if (!merged.length) {
+                renderEmptyState(newsContainer, t('emptyNewsText'));
+                state.isLoading = false;
+                return;
+            }
 
-        if (!merged.length) {
+            // ترتيب + تقليل العدد
+            merged.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+            merged = merged.slice(0, 14);
+
+            // ترجمة على دفعات
+            const translatedItems = await translateBatch(merged, currentLang);
+
+            if (state.activeCategory === categoryKey) {
+                renderNewsList(translatedItems);
+            }
+        } catch (err) {
             renderEmptyState(newsContainer, t('emptyNewsText'));
-            return;
-        }
-
-        merged.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-        merged = merged.slice(0, 20);
-
-        const translatedItems = await Promise.all(merged.map(async (item) => {
-            const title = await translateText(item.title, currentLang);
-            const description = await translateText(item.description, currentLang);
-            // لا نترجم اسم المصدر لأنه غالباً اسم معروف
-            return { ...item, title, description };
-        }));
-
-        if (state.activeCategory === categoryKey) {
-            renderNewsList(translatedItems);
+        } finally {
+            state.isLoading = false;
         }
     }
 
@@ -344,10 +411,11 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const d = new Date(dateInput);
             if (isNaN(d.getTime())) return '';
-            return d.toLocaleDateString(currentLang === 'ar' ? 'ar-TD' : (currentLang === 'fr' ? 'fr-FR' : 'en-US'), {
-                year: 'numeric', month: 'short', day: 'numeric'
-            });
-        } catch (e) {
+            return d.toLocaleDateString(
+                currentLang === 'ar' ? 'ar-TD' : (currentLang === 'fr' ? 'fr-FR' : 'en-US'),
+                { year: 'numeric', month: 'short', day: 'numeric' }
+            );
+        } catch {
             return '';
         }
     }
@@ -401,7 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ======================================================================
-       6. Ticker & Language Switcher
+       6. Ticker & Language
        ====================================================================== */
 
     async function loadTickerNews() {
@@ -427,7 +495,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 tickerContent.textContent = t('siteTitle');
             }
-        } catch (e) {
+        } catch {
             tickerContent.textContent = t('siteTitle');
         }
     }
@@ -454,6 +522,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (dict[key]) el.placeholder = dict[key];
         });
 
+        // إعادة تحميل الأخبار باللغة الجديدة
         switchCategoryView(state.activeCategory);
         renderOpinionArticles();
         loadTickerNews();
@@ -469,7 +538,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         categoryBtns.forEach(b => b.classList.toggle('active', b.dataset.category === category));
 
-        if (state.activeCategory === 'opinion') {
+        if (category === 'opinion') {
             if (opinionSection) opinionSection.style.display = 'block';
             if (newsContainer) newsContainer.style.display = 'none';
         } else {
@@ -499,11 +568,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ======================================================================
-       7. Theme & Opinion Articles logic
+       7. Theme & Opinion
        ====================================================================== */
 
     function applyTheme(theme) {
         document.body.classList.toggle('dark-mode', theme === 'dark');
+        updateThemeIcon();
+    }
+
+    function updateThemeIcon() {
+        const isDark = document.body.classList.contains('dark-mode');
+        const moon = document.querySelector('#theme-toggle .icon-moon');
+        const sun = document.querySelector('#theme-toggle .icon-sun');
+        if (moon && sun) {
+            moon.style.display = isDark ? 'none' : 'block';
+            sun.style.display = isDark ? 'block' : 'none';
+        }
     }
 
     const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || 'light';
@@ -513,6 +593,7 @@ document.addEventListener('DOMContentLoaded', () => {
         themeBtn.addEventListener('click', () => {
             const isDark = document.body.classList.toggle('dark-mode');
             localStorage.setItem(THEME_STORAGE_KEY, isDark ? 'dark' : 'light');
+            updateThemeIcon();
         });
     }
 
@@ -520,7 +601,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const raw = localStorage.getItem(OPINION_STORAGE_KEY);
             return raw ? JSON.parse(raw) : [];
-        } catch (e) {
+        } catch {
             return [];
         }
     }
@@ -529,7 +610,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             localStorage.setItem(OPINION_STORAGE_KEY, JSON.stringify(state.opinionArticles));
         } catch (e) {
-            console.warn('Failed to save opinion articles (storage full?)');
+            console.warn('Storage full');
         }
     }
 
@@ -598,7 +679,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // دالة مساعدة لإضافة المقال (بعد قراءة الصورة)
     function addOpinionArticle(authorName, title, body, authorImg = '') {
         state.opinionArticles.unshift({
             id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
@@ -608,7 +688,6 @@ document.addEventListener('DOMContentLoaded', () => {
             authorImg,
             date: new Date().toISOString()
         });
-
         saveOpinionArticles();
         renderOpinionArticles();
         if (articleForm) articleForm.reset();
@@ -636,24 +715,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!authorName || !title || !body) return;
 
-            // إذا وُجدت صورة، نقرأها كـ Base64
             if (authorImgInput && authorImgInput.files && authorImgInput.files[0]) {
                 const file = authorImgInput.files[0];
-
-                // حد أقصى بسيط لحجم الصورة (حوالي 1.5 ميجا)
                 if (file.size > 1.5 * 1024 * 1024) {
-                    alert(currentLang === 'ar' ? 'حجم الصورة كبير جدًا. يرجى اختيار صورة أصغر.' : 'Image is too large. Please choose a smaller one.');
+                    alert(currentLang === 'ar' ? 'حجم الصورة كبير جداً' : 'Image too large');
                     return;
                 }
-
                 const reader = new FileReader();
-                reader.onload = function (event) {
-                    addOpinionArticle(authorName, title, body, event.target.result);
-                };
-                reader.onerror = function () {
-                    // في حالة فشل قراءة الصورة ننشر بدونها
-                    addOpinionArticle(authorName, title, body, '');
-                };
+                reader.onload = (event) => addOpinionArticle(authorName, title, body, event.target.result);
+                reader.onerror = () => addOpinionArticle(authorName, title, body, '');
                 reader.readAsDataURL(file);
             } else {
                 addOpinionArticle(authorName, title, body, '');
@@ -673,7 +743,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderOpinionArticles();
                 alert(currentLang === 'ar' ? 'تم تسجيل الدخول بنجاح' : 'Login successful');
             } else {
-                alert(currentLang === 'ar' ? 'اسم المستخدم أو كلمة المرور غير صحيحة' : 'Incorrect username or password');
+                alert(currentLang === 'ar' ? 'بيانات الدخول غير صحيحة' : 'Incorrect credentials');
             }
         });
     }
