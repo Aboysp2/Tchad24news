@@ -1,89 +1,78 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     /* ======================================================================
-       0. Feeds Configuration
+       0. مصادر الأخبار
        ====================================================================== */
 
-    // مصادر حسب اللغة
-    const ARABIC_SOURCES = {
-        chad: [
-            { url: 'https://www.alwihdainfo.com/feed/', name: 'Alwihda Info' },
-            { url: 'https://tchadinfos.com/feed/', name: 'Tchadinfos' },
-            { url: 'https://journaldutchad.com/feed/', name: 'Journal du Tchad' }
-        ],
-        africa: [
-            { url: 'https://www.bbc.com/arabic/topics/ck20or7087gt/rss.xml', name: 'BBC Arabic' },
-            { url: 'https://www.aljazeera.net/rss', name: 'الجزيرة' }
-        ],
-        world: [
-            { url: 'https://www.aljazeera.net/rss', name: 'الجزيرة' },
-            { url: 'https://www.bbc.com/arabic/index.xml', name: 'BBC Arabic' },
-            { url: 'https://www.france24.com/ar/rss', name: 'فرانس 24' }
-        ],
-        sports: [
-            { url: 'https://www.aljazeera.net/rss/sports', name: 'الجزيرة رياضة' },
-            { url: 'https://www.france24.com/ar/%D8%B1%D9%8A%D8%A7%D8%B6%D8%A9/rss', name: 'فرانس 24 رياضة' }
-        ]
+    const SOURCES = {
+        ar: {
+            chad: [
+                { url: 'https://www.alwihdainfo.com/feed/', name: 'Alwihda Info' },
+                { url: 'https://tchadinfos.com/feed/', name: 'Tchadinfos' },
+                { url: 'https://journaldutchad.com/feed/', name: 'Journal du Tchad' },
+                { url: 'https://www.jeuneafrique.com/pays/tchad/feed/', name: 'Jeune Afrique - Tchad' },
+                { url: 'https://www.france24.com/fr/tag/tchad/rss', name: 'France 24 - Tchad' },
+                { url: 'https://www.rfi.fr/fr/tag/tchad/rss', name: 'RFI - Tchad' }
+            ],
+            africa: [
+                { url: 'https://www.bbc.com/arabic/topics/ck20or7087gt/rss.xml', name: 'BBC Arabic' },
+                { url: 'https://www.aljazeera.net/rss', name: 'الجزيرة' }
+            ],
+            world: [
+                { url: 'https://www.aljazeera.net/rss', name: 'الجزيرة' },
+                { url: 'https://www.bbc.com/arabic/index.xml', name: 'BBC Arabic' }
+            ],
+            sports: [
+                { url: 'https://www.aljazeera.net/rss/sports', name: 'الجزيرة رياضة' },
+                { url: 'https://www.france24.com/ar/%D8%B1%D9%8A%D8%A7%D8%B6%D8%A9/rss', name: 'فرانس 24 رياضة' }
+            ]
+        },
+        fr: {
+            chad: [
+                { url: 'https://www.france24.com/fr/tag/tchad/rss', name: 'France 24' },
+                { url: 'https://www.rfi.fr/fr/tag/tchad/rss', name: 'RFI' },
+                { url: 'https://www.jeuneafrique.com/pays/tchad/feed/', name: 'Jeune Afrique' },
+                { url: 'https://www.alwihdainfo.com/feed/', name: 'Alwihda Info' },
+                { url: 'https://tchadinfos.com/feed/', name: 'Tchadinfos' }
+            ],
+            africa: [
+                { url: 'https://www.jeuneafrique.com/feed/', name: 'Jeune Afrique' },
+                { url: 'https://www.africanews.com/feed/', name: 'Africanews' }
+            ],
+            world: [
+                { url: 'https://www.france24.com/fr/rss', name: 'France 24' },
+                { url: 'https://www.lemonde.fr/rss/une.xml', name: 'Le Monde' }
+            ],
+            sports: [
+                { url: 'https://www.france24.com/fr/sports/rss', name: 'France 24 Sports' },
+                { url: 'https://www.lequipe.fr/rss/actu_rss.xml', name: "L'Équipe" }
+            ]
+        },
+        en: {
+            chad: [
+                { url: 'https://www.africanews.com/country/chad/feed/', name: 'Africanews Chad' },
+                { url: 'https://www.jeuneafrique.com/pays/tchad/feed/', name: 'Jeune Afrique' }
+            ],
+            africa: [
+                { url: 'https://www.africanews.com/feed/', name: 'Africanews' },
+                { url: 'https://www.theafricareport.com/feed/', name: 'The Africa Report' }
+            ],
+            world: [
+                { url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', name: 'NYT World' },
+                { url: 'https://feeds.bbci.co.uk/news/world/rss.xml', name: 'BBC World' }
+            ],
+            sports: [
+                { url: 'http://feeds.bbci.co.uk/sport/football/rss.xml', name: 'BBC Football' },
+                { url: 'https://www.espn.com/espn/rss/soccer/news', name: 'ESPN Soccer' },
+                { url: 'http://feeds.bbci.co.uk/sport/tennis/rss.xml', name: 'BBC Tennis' }
+            ]
+        }
     };
 
-    const FRENCH_SOURCES = {
-        chad: [
-            { url: 'https://www.jeuneafrique.com/pays/tchad/feed/', name: 'Jeune Afrique' },
-            { url: 'https://www.france24.com/fr/tag/tchad/rss', name: 'France 24' },
-            { url: 'https://www.rfi.fr/fr/tag/tchad/rss', name: 'RFI' },
-            { url: 'https://www.alwihdainfo.com/feed/', name: 'Alwihda Info' }
-        ],
-        africa: [
-            { url: 'https://www.jeuneafrique.com/feed/', name: 'Jeune Afrique' },
-            { url: 'https://www.africanews.com/feed/', name: 'Africanews' },
-            { url: 'https://www.rfi.fr/fr/afrique/rss', name: 'RFI Afrique' }
-        ],
-        world: [
-            { url: 'https://www.france24.com/fr/rss', name: 'France 24' },
-            { url: 'https://www.lemonde.fr/rss/une.xml', name: 'Le Monde' },
-            { url: 'https://www.rfi.fr/fr/rss', name: 'RFI' }
-        ],
-        sports: [
-            { url: 'https://www.france24.com/fr/sports/rss', name: 'France 24 Sports' },
-            { url: 'https://www.lequipe.fr/rss/actu_rss.xml', name: 'L\'Équipe' },
-            { url: 'http://feeds.bbci.co.uk/sport/football/rss.xml', name: 'BBC Sport' }
-        ]
-    };
-
-    const ENGLISH_SOURCES = {
-        chad: [
-            { url: 'https://www.africanews.com/country/chad/feed/', name: 'Africanews Chad' },
-            { url: 'https://www.jeuneafrique.com/pays/tchad/feed/', name: 'Jeune Afrique' }
-        ],
-        africa: [
-            { url: 'https://www.africanews.com/feed/', name: 'Africanews' },
-            { url: 'https://www.theafricareport.com/feed/', name: 'The Africa Report' },
-            { url: 'https://feeds.bbci.co.uk/news/world/africa/rss.xml', name: 'BBC Africa' }
-        ],
-        world: [
-            { url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', name: 'NYT World' },
-            { url: 'https://www.theguardian.com/world/rss', name: 'The Guardian' },
-            { url: 'https://feeds.bbci.co.uk/news/world/rss.xml', name: 'BBC World' }
-        ],
-        sports: [
-            // كرة القدم أولاً
-            { url: 'http://feeds.bbci.co.uk/sport/football/rss.xml', name: 'BBC Football' },
-            { url: 'https://www.espn.com/espn/rss/soccer/news', name: 'ESPN Soccer' },
-            // تنس البطولات الكبرى
-            { url: 'http://feeds.bbci.co.uk/sport/tennis/rss.xml', name: 'BBC Tennis' },
-            { url: 'https://www.espn.com/espn/rss/tennis/news', name: 'ESPN Tennis' },
-            // مصارعة وأخرى
-            { url: 'https://www.espn.com/espn/rss/news', name: 'ESPN Sports' },
-            { url: 'http://feeds.bbci.co.uk/sport/rss.xml', name: 'BBC Sport' }
-        ]
-    };
-
-    const OPINION_STORAGE_KEY = 'tchad24_opinion_articles_v1'; // لم يعد مستخدماً
     const THEME_STORAGE_KEY = 'tchad24_theme';
     const NOTIFY_STORAGE_KEY = 'tchad24_notify_enabled';
     const CATEGORY_STORAGE_KEY = 'tchad24_last_category';
-    const ADMIN_SESSION_KEY = 'tchad24_is_admin';
-    const TRANSLATE_CACHE_KEY = 'tchad24_translate_cache_v4';
+    const CACHE_KEY = 'tchad24_news_cache_v5';
 
     /* ======================================================================
        1. Translations
@@ -137,51 +126,43 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentLang = localStorage.getItem('preferred_lang') || 'ar';
 
     function t(key) {
-        return (translations[currentLang] && translations[currentLang][key]) || translations.en[key] || key;
-    }
-
-    /* ---------- Translation Cache ---------- */
-    function loadTranslateCache() {
-        try {
-            return JSON.parse(sessionStorage.getItem(TRANSLATE_CACHE_KEY) || '{}');
-        } catch { return {}; }
-    }
-    function saveTranslateCache(cache) {
-        try {
-            const keys = Object.keys(cache);
-            if (keys.length > 200) keys.slice(0, keys.length - 200).forEach(k => delete cache[k]);
-            sessionStorage.setItem(TRANSLATE_CACHE_KEY, JSON.stringify(cache));
-        } catch (e) {}
-    }
-    let translateCache = loadTranslateCache();
-
-    async function translateText(text, targetLang) {
-        if (!text || text.trim().length < 3) return text;
-        const cacheKey = `${targetLang}::${text}`;
-        if (translateCache[cacheKey]) return translateCache[cacheKey];
-
-        try {
-            const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`);
-            const data = await res.json();
-            const translated = data[0].map(item => item[0]).join('');
-            translateCache[cacheKey] = translated;
-            saveTranslateCache(translateCache);
-            return translated;
-        } catch (e) {
-            return text;
-        }
+        return translations[currentLang]?.[key] || translations.en[key] || key;
     }
 
     /* ======================================================================
-       2. State & DOM
+       2. Cache
        ====================================================================== */
 
-    const savedCategory = localStorage.getItem(CATEGORY_STORAGE_KEY) || 'chad';
+    function getCache() {
+        try {
+            return JSON.parse(sessionStorage.getItem(CACHE_KEY) || '{}');
+        } catch { return {}; }
+    }
+
+    function setCache(key, data) {
+        try {
+            const cache = getCache();
+            cache[key] = { data, time: Date.now() };
+            sessionStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+        } catch (e) {}
+    }
+
+    function getCached(key, maxAge = 8 * 60 * 1000) {
+        const cache = getCache();
+        if (cache[key] && (Date.now() - cache[key].time < maxAge)) {
+            return cache[key].data;
+        }
+        return null;
+    }
+
+    /* ======================================================================
+       3. State & DOM
+       ====================================================================== */
 
     const state = {
-        activeCategory: savedCategory,
-        lastNotifiedNews: '',
-        isLoading: false
+        activeCategory: localStorage.getItem(CATEGORY_STORAGE_KEY) || 'chad',
+        isLoading: false,
+        lastNotified: ''
     };
 
     const newsContainer = document.getElementById('news-container');
@@ -191,267 +172,200 @@ document.addEventListener('DOMContentLoaded', () => {
     const tickerContent = document.getElementById('ticker-content');
 
     /* ======================================================================
-       3. Notifications
+       4. Notifications
        ====================================================================== */
 
     function initNotifications() {
-        const isEnabled = localStorage.getItem(NOTIFY_STORAGE_KEY) === 'true';
+        const enabled = localStorage.getItem(NOTIFY_STORAGE_KEY) === 'true';
         if (notifyBtn) {
-            notifyBtn.classList.toggle('active', isEnabled);
-            notifyBtn.addEventListener('click', toggleNotifications);
-        }
-    }
-
-    async function toggleNotifications() {
-        if (!("Notification" in window)) {
-            alert("Your browser does not support notifications.");
-            return;
-        }
-        const currentlyEnabled = localStorage.getItem(NOTIFY_STORAGE_KEY) === 'true';
-        if (!currentlyEnabled) {
-            const permission = await Notification.requestPermission();
-            if (permission === 'granted') {
-                localStorage.setItem(NOTIFY_STORAGE_KEY, 'true');
-                notifyBtn?.classList.add('active');
-                new Notification(t('siteTitle'), { body: t('notificationsEnabled') });
-            }
-        } else {
-            localStorage.setItem(NOTIFY_STORAGE_KEY, 'false');
-            notifyBtn?.classList.remove('active');
-            alert(t('notificationsDisabled'));
-        }
-    }
-
-    function triggerBreakingNewsNotification(title) {
-        const isEnabled = localStorage.getItem(NOTIFY_STORAGE_KEY) === 'true';
-        if (isEnabled && Notification.permission === 'granted' && title !== state.lastNotifiedNews) {
-            state.lastNotifiedNews = title;
-            new Notification(`${t('tickerTitle')}: ${t('siteTitle')}`, { body: title });
+            notifyBtn.classList.toggle('active', enabled);
+            notifyBtn.addEventListener('click', async () => {
+                if (!("Notification" in window)) return alert("Not supported");
+                if (localStorage.getItem(NOTIFY_STORAGE_KEY) === 'true') {
+                    localStorage.setItem(NOTIFY_STORAGE_KEY, 'false');
+                    notifyBtn.classList.remove('active');
+                    alert(t('notificationsDisabled'));
+                } else {
+                    const perm = await Notification.requestPermission();
+                    if (perm === 'granted') {
+                        localStorage.setItem(NOTIFY_STORAGE_KEY, 'true');
+                        notifyBtn.classList.add('active');
+                        new Notification(t('siteTitle'), { body: t('notificationsEnabled') });
+                    }
+                }
+            });
         }
     }
 
     /* ======================================================================
-       4. News Fetching
+       5. Fetching
        ====================================================================== */
 
     function stripHtml(html) {
         const tmp = document.createElement('div');
         tmp.innerHTML = html || '';
-        return (tmp.textContent || tmp.innerText || '').trim();
+        return (tmp.textContent || '').trim();
     }
 
-    async function fetchOneFeed(source) {
+    async function fetchFeed(source) {
         try {
             const url = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(source.url)}`;
             const res = await fetch(url);
-            if (res.ok) {
-                const data = await res.json();
-                if (data.status === 'ok' && Array.isArray(data.items)) {
-                    return data.items.slice(0, 6).map(raw => ({
-                        title: raw.title || '',
-                        description: stripHtml(raw.description).slice(0, 150),
-                        link: raw.link || '',
-                        pubDate: raw.pubDate || '',
-                        source: source.name
-                    }));
-                }
-            }
-        } catch (e) {}
-
-        // Fallback
-        try {
-            const fallback = `https://api.allorigins.win/get?url=${encodeURIComponent(source.url)}`;
-            const res = await fetch(fallback);
+            if (!res.ok) throw new Error();
             const data = await res.json();
-            const parser = new DOMParser();
-            const xml = parser.parseFromString(data.contents, "text/xml");
-            return Array.from(xml.querySelectorAll("item")).slice(0, 6).map(item => ({
-                title: item.querySelector("title")?.textContent || '',
-                description: stripHtml(item.querySelector("description")?.textContent || '').slice(0, 150),
-                link: item.querySelector("link")?.textContent || '',
-                pubDate: item.querySelector("pubDate")?.textContent || '',
+            if (data.status !== 'ok' || !data.items) throw new Error();
+            return data.items.slice(0, 5).map(item => ({
+                title: item.title || '',
+                description: stripHtml(item.description).slice(0, 140),
+                link: item.link || '',
+                pubDate: item.pubDate || '',
                 source: source.name
             }));
-        } catch (e) {
+        } catch {
             return [];
         }
     }
 
-    function getSourcesForLang(category) {
-        if (currentLang === 'ar') return ARABIC_SOURCES[category] || ARABIC_SOURCES.chad;
-        if (currentLang === 'fr') return FRENCH_SOURCES[category] || FRENCH_SOURCES.chad;
-        return ENGLISH_SOURCES[category] || ENGLISH_SOURCES.chad;
-    }
-
-    async function loadCategoryNews(categoryKey) {
+    async function loadCategory(category) {
         if (state.isLoading) return;
         state.isLoading = true;
-        renderEmptyState(newsContainer, t('loadingText'));
 
-        const sources = getSourcesForLang(categoryKey);
+        const cacheKey = `${currentLang}_${category}`;
+        const cached = getCached(cacheKey);
 
-        try {
-            const results = await Promise.allSettled(sources.map(fetchOneFeed));
-            let merged = [];
-            results.forEach(r => {
-                if (r.status === 'fulfilled' && Array.isArray(r.value)) {
-                    merged = merged.concat(r.value);
-                }
-            });
-
-            if (state.activeCategory !== categoryKey) {
-                state.isLoading = false;
-                return;
-            }
-
-            if (!merged.length) {
-                renderEmptyState(newsContainer, t('emptyNewsText'));
-                state.isLoading = false;
-                return;
-            }
-
-            merged.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-            merged = merged.slice(0, 12);
-
-            // ترجمة فقط للعربية
-            let finalItems = merged;
-            if (currentLang === 'ar') {
-                finalItems = await Promise.all(merged.map(async item => ({
-                    ...item,
-                    title: await translateText(item.title, 'ar'),
-                    description: await translateText(item.description, 'ar')
-                })));
-            }
-
-            if (state.activeCategory === categoryKey) {
-                renderNewsList(finalItems);
-            }
-        } catch (err) {
-            renderEmptyState(newsContainer, t('emptyNewsText'));
-        } finally {
+        if (cached) {
+            renderNews(cached);
             state.isLoading = false;
+            // تحديث في الخلفية
+            fetchAndUpdate(category, cacheKey);
+            return;
+        }
+
+        renderEmpty(t('loadingText'));
+        await fetchAndUpdate(category, cacheKey);
+        state.isLoading = false;
+    }
+
+    async function fetchAndUpdate(category, cacheKey) {
+        const sources = SOURCES[currentLang]?.[category] || SOURCES.ar.chad;
+        const results = await Promise.allSettled(sources.map(fetchFeed));
+
+        let items = [];
+        results.forEach(r => {
+            if (r.status === 'fulfilled') items = items.concat(r.value);
+        });
+
+        if (!items.length) {
+            if (state.activeCategory === category) renderEmpty(t('emptyNewsText'));
+            return;
+        }
+
+        items.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+        items = items.slice(0, 12);
+
+        // ترجمة فقط للعربية
+        if (currentLang === 'ar') {
+            items = await Promise.all(items.map(async item => ({
+                ...item,
+                title: await translate(item.title),
+                description: await translate(item.description)
+            })));
+        }
+
+        setCache(cacheKey, items);
+
+        if (state.activeCategory === category) {
+            renderNews(items);
+        }
+    }
+
+    // ترجمة مع كاش
+    const translateCache = {};
+    async function translate(text) {
+        if (!text || text.length < 4) return text;
+        if (translateCache[text]) return translateCache[text];
+        try {
+            const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=ar&dt=t&q=${encodeURIComponent(text)}`);
+            const data = await res.json();
+            const result = data[0].map(i => i[0]).join('');
+            translateCache[text] = result;
+            return result;
+        } catch {
+            return text;
         }
     }
 
     /* ======================================================================
-       5. Render
+       6. Render
        ====================================================================== */
 
-    function clearNode(node) {
-        if (!node) return;
-        while (node.firstChild) node.removeChild(node.firstChild);
+    function renderEmpty(msg) {
+        newsContainer.innerHTML = `<p class="empty-state">${msg}</p>`;
     }
 
-    function renderEmptyState(container, message) {
-        clearNode(container);
-        const p = document.createElement('p');
-        p.className = 'empty-state';
-        p.textContent = message;
-        container.appendChild(p);
+    function renderNews(items) {
+        if (!items.length) return renderEmpty(t('emptyNewsText'));
+        newsContainer.innerHTML = '';
+        items.forEach(item => {
+            const card = document.createElement('article');
+            card.className = 'news-card';
+            card.innerHTML = `
+                <span class="category-badge">${item.source}</span>
+                <h3>${item.title}</h3>
+                <p>${item.description}</p>
+                <div class="news-card-footer">
+                    <span>${formatDate(item.pubDate)}</span>
+                    ${item.link ? `<a class="news-card-link" href="${item.link}" target="_blank" rel="noopener">${t('readMoreText')}</a>` : ''}
+                </div>
+            `;
+            newsContainer.appendChild(card);
+        });
     }
 
-    function formatDate(dateInput) {
+    function formatDate(d) {
         try {
-            const d = new Date(dateInput);
-            if (isNaN(d.getTime())) return '';
-            return d.toLocaleDateString(
+            return new Date(d).toLocaleDateString(
                 currentLang === 'ar' ? 'ar-TD' : currentLang === 'fr' ? 'fr-FR' : 'en-US',
                 { year: 'numeric', month: 'short', day: 'numeric' }
             );
         } catch { return ''; }
     }
 
-    function createNewsCard(item) {
-        const card = document.createElement('article');
-        card.className = 'news-card';
-
-        const badge = document.createElement('span');
-        badge.className = 'category-badge';
-        badge.textContent = item.source || t('sourceLabel');
-        card.appendChild(badge);
-
-        const title = document.createElement('h3');
-        title.textContent = item.title;
-        card.appendChild(title);
-
-        const desc = document.createElement('p');
-        desc.textContent = item.description;
-        card.appendChild(desc);
-
-        const footer = document.createElement('div');
-        footer.className = 'news-card-footer';
-
-        const date = document.createElement('span');
-        date.textContent = formatDate(item.pubDate);
-        footer.appendChild(date);
-
-        if (item.link) {
-            const link = document.createElement('a');
-            link.className = 'news-card-link';
-            link.href = item.link;
-            link.target = '_blank';
-            link.rel = 'noopener noreferrer';
-            link.textContent = t('readMoreText');
-            footer.appendChild(link);
-        }
-
-        card.appendChild(footer);
-        return card;
-    }
-
-    function renderNewsList(items) {
-        clearNode(newsContainer);
-        if (!items?.length) {
-            renderEmptyState(newsContainer, t('emptyNewsText'));
-            return;
-        }
-        items.forEach(item => newsContainer.appendChild(createNewsCard(item)));
-    }
-
     /* ======================================================================
-       6. Ticker (عاجل) - محدث باستمرار
-       ترتيب الأولوية: تشاد → أفريقيا → العالم → الرياضة
+       7. Ticker (عاجل)
        ====================================================================== */
 
-    async function loadTickerNews() {
+    async function loadTicker() {
         try {
-            const priority = ['chad', 'africa', 'world', 'sports'];
-            let allHeadlines = [];
+            const cats = ['chad', 'africa', 'world', 'sports'];
+            let headlines = [];
 
-            for (const cat of priority) {
-                const sources = getSourcesForLang(cat).slice(0, 2);
-                const results = await Promise.allSettled(sources.map(fetchOneFeed));
+            for (const cat of cats) {
+                const sources = (SOURCES[currentLang]?.[cat] || []).slice(0, 1);
+                const results = await Promise.allSettled(sources.map(fetchFeed));
                 results.forEach(r => {
-                    if (r.status === 'fulfilled' && Array.isArray(r.value)) {
-                        allHeadlines = allHeadlines.concat(r.value.slice(0, 2));
-                    }
+                    if (r.status === 'fulfilled') headlines = headlines.concat(r.value.slice(0, 2));
                 });
-                if (allHeadlines.length >= 8) break;
+                if (headlines.length >= 6) break;
             }
 
-            if (allHeadlines.length) {
-                allHeadlines.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-                let titles = allHeadlines.slice(0, 8).map(h => h.title);
-
+            if (headlines.length) {
+                headlines.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+                let titles = headlines.slice(0, 6).map(h => h.title);
                 if (currentLang === 'ar') {
-                    titles = await Promise.all(titles.map(t => translateText(t, 'ar')));
+                    titles = await Promise.all(titles.map(translate));
                 }
-
                 tickerContent.textContent = titles.join('  ـــ  ');
-                triggerBreakingNewsNotification(titles[0]);
-            } else {
-                tickerContent.textContent = t('siteTitle');
             }
         } catch {
             tickerContent.textContent = t('siteTitle');
         }
     }
 
-    // تحديث العاجل كل 5 دقائق
-    setInterval(loadTickerNews, 5 * 60 * 1000);
+    setInterval(loadTicker, 6 * 60 * 1000);
 
     /* ======================================================================
-       7. Language & Categories
+       8. Language & Categories
        ====================================================================== */
 
     function setLanguage(lang) {
@@ -460,44 +374,42 @@ document.addEventListener('DOMContentLoaded', () => {
         document.documentElement.lang = lang;
         document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
 
-        document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.lang === lang);
+        document.querySelectorAll('.lang-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.lang === lang);
         });
 
-        const dict = translations[lang] || translations.en;
+        const dict = translations[lang];
         document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.dataset.i18n;
-            if (dict[key]) el.textContent = dict[key];
+            if (dict[el.dataset.i18n]) el.textContent = dict[el.dataset.i18n];
         });
 
-        switchCategoryView(state.activeCategory);
-        loadTickerNews();
+        switchCategory(state.activeCategory);
+        loadTicker();
     }
 
     document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
     });
 
-    function switchCategoryView(category) {
-        state.activeCategory = category;
-        localStorage.setItem(CATEGORY_STORAGE_KEY, category);
-
-        categoryBtns.forEach(b => b.classList.toggle('active', b.dataset.category === category));
-        loadCategoryNews(category);
+    function switchCategory(cat) {
+        state.activeCategory = cat;
+        localStorage.setItem(CATEGORY_STORAGE_KEY, cat);
+        categoryBtns.forEach(b => b.classList.toggle('active', b.dataset.category === cat));
+        loadCategory(cat);
     }
 
     categoryBtns.forEach(btn => {
-        btn.addEventListener('click', () => switchCategoryView(btn.dataset.category));
+        btn.addEventListener('click', () => switchCategory(btn.dataset.category));
     });
 
     /* ======================================================================
-       8. Theme
+       9. Theme
        ====================================================================== */
 
     function updateThemeIcon() {
         const isDark = document.body.classList.contains('dark-mode');
-        const moon = document.querySelector('#theme-toggle .icon-moon');
-        const sun = document.querySelector('#theme-toggle .icon-sun');
+        const moon = document.querySelector('.icon-moon');
+        const sun = document.querySelector('.icon-sun');
         if (moon && sun) {
             moon.style.display = isDark ? 'none' : 'block';
             sun.style.display = isDark ? 'block' : 'none';
@@ -508,16 +420,14 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.toggle('dark-mode', savedTheme === 'dark');
     updateThemeIcon();
 
-    if (themeBtn) {
-        themeBtn.addEventListener('click', () => {
-            const isDark = document.body.classList.toggle('dark-mode');
-            localStorage.setItem(THEME_STORAGE_KEY, isDark ? 'dark' : 'light');
-            updateThemeIcon();
-        });
-    }
+    themeBtn?.addEventListener('click', () => {
+        const isDark = document.body.classList.toggle('dark-mode');
+        localStorage.setItem(THEME_STORAGE_KEY, isDark ? 'dark' : 'light');
+        updateThemeIcon();
+    });
 
     /* ======================================================================
-       9. Init
+       10. Init
        ====================================================================== */
 
     initNotifications();
