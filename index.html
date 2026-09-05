@@ -5,11 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tchad24News</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- يمكنك إضافة فافيكون هنا لو أردت -->
 </head>
 <body>
 
-    <!-- ==================== Header / Nav ==================== -->
+    <!-- Header -->
     <header class="main-header">
         <div class="logo-container">
             <span class="flag-icon">🇹🇩</span>
@@ -17,36 +16,40 @@
         </div>
 
         <div class="header-controls">
-            <!-- Notifications Toggle -->
-            <button id="notify-toggle" class="icon-btn" title="Notifications">
-                🔔
+            <button id="notify-toggle" class="icon-btn" title="Notifications" aria-label="Notifications">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                </svg>
             </button>
 
-            <!-- Language Selector -->
             <div class="lang-switch">
                 <button class="lang-btn active" data-lang="ar">العربية</button>
                 <button class="lang-btn" data-lang="fr">Français</button>
                 <button class="lang-btn" data-lang="en">English</button>
             </div>
 
-            <!-- Dark Mode Switch -->
-            <button id="theme-toggle" class="icon-btn" title="Toggle Theme">
-                🌙
+            <button id="theme-toggle" class="icon-btn" title="Toggle Theme" aria-label="Toggle Theme">
+                <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+                </svg>
+                <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                    <circle cx="12" cy="12" r="4"/>
+                    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+                </svg>
             </button>
         </div>
     </header>
 
-    <!-- ==================== Breaking News Ticker ==================== -->
+    <!-- Ticker -->
     <div class="ticker-wrap">
         <div class="ticker-title" data-i18n="tickerTitle">عاجل</div>
         <div class="ticker-container">
-            <div id="ticker-content">
-                <!-- Dynamic Ticker Titles -->
-            </div>
+            <div id="ticker-content"></div>
         </div>
     </div>
 
-    <!-- ==================== Main Categories Bar ==================== -->
+    <!-- Categories -->
     <nav class="categories-nav">
         <button class="category-btn active" data-category="chad" data-i18n="catChad">🇹🇩 تشاد</button>
         <button class="category-btn" data-category="africa" data-i18n="catAfrica">🌍 إفريقيا</button>
@@ -56,107 +59,61 @@
         <button class="category-btn" data-category="opinion" data-i18n="catOpinion">✍️ مقالات الرأي</button>
     </nav>
 
-    <!-- ==================== Main Content Area ==================== -->
     <main>
+        <!-- News -->
+        <section id="news-container" class="news-grid"></section>
 
-        <!-- Standard News Grid Section -->
-        <section id="news-container" class="news-grid">
-            <!-- Dynamic news fetched via script.js -->
-        </section>
-
-        <!-- Opinion Articles & Publishing Area -->
-        <section id="opinion-section" style="display: none;">
-            
-            <!-- Sub Tabs -->
+        <!-- Opinion Section -->
+        <section id="opinion-section" style="display:none;">
             <div class="sub-tabs">
                 <button class="sub-tab-btn active" data-tab="publish" data-i18n="publishTabBtn">✍️ أنشر مقالتك</button>
                 <button class="sub-tab-btn" data-tab="admin" data-i18n="adminLoginBtn">🔐 دخول الأدمن</button>
             </div>
 
-            <!-- قائمة المقالات المنشورة (مهم جداً) -->
             <h2 class="section-title" data-i18n="opinionListTitle">المقالات المنشورة</h2>
-            <div id="opinion-articles-list" class="news-grid">
-                <!-- المقالات تظهر هنا ديناميكياً -->
-            </div>
+            <div id="opinion-articles-list" class="news-grid"></div>
 
-            <!-- ==================== Tab 1: Publish Form ==================== -->
+            <!-- Publish Form -->
             <div id="publish-form-container">
                 <h2 data-i18n="publishTitle">أنشر مقالتك</h2>
-                <div id="publish-message" class="form-message"></div>
-
                 <form id="article-form">
                     <div class="form-group">
                         <label data-i18n="authorImgLabel">الصورة الشخصية للكاتب:</label>
                         <input type="file" id="author-img" accept="image/*">
                     </div>
-
                     <div class="form-group">
-                        <input type="text" 
-                               id="author-name" 
-                               data-i18n-placeholder="authorNamePlaceholder" 
-                               placeholder="اسم الكاتب" 
-                               required>
+                        <input type="text" id="author-name" data-i18n-placeholder="authorNamePlaceholder" placeholder="اسم الكاتب" required>
                     </div>
-
                     <div class="form-group">
-                        <input type="text" 
-                               id="article-title" 
-                               data-i18n-placeholder="articleTitlePlaceholder" 
-                               placeholder="عنوان المقال" 
-                               required>
+                        <input type="text" id="article-title" data-i18n-placeholder="articleTitlePlaceholder" placeholder="عنوان المقال" required>
                     </div>
-
                     <div class="form-group">
-                        <textarea id="article-body" 
-                                  data-i18n-placeholder="articleContentPlaceholder" 
-                                  placeholder="اكتب مقالك هنا..." 
-                                  rows="7" 
-                                  required></textarea>
+                        <textarea id="article-body" data-i18n-placeholder="articleContentPlaceholder" placeholder="اكتب مقالك هنا..." rows="6" required></textarea>
                     </div>
-
-                    <button type="submit" class="submit-btn" data-i18n="publishBtn">
-                        أنشر مقالتك
-                    </button>
+                    <button type="submit" class="submit-btn" data-i18n="publishBtn">أنشر مقالتك</button>
                 </form>
             </div>
 
-            <!-- ==================== Tab 2: Admin Login ==================== -->
-            <div id="admin-login-container" style="display: none;">
+            <!-- Admin Login -->
+            <div id="admin-login-container" style="display:none;">
                 <h2 data-i18n="adminLoginTitle">دخول الأدمن</h2>
-                <div id="admin-message" class="form-message"></div>
-
                 <form id="admin-form">
                     <div class="form-group">
-                        <input type="text" 
-                               id="admin-username" 
-                               data-i18n-placeholder="usernamePlaceholder" 
-                               placeholder="اسم المستخدم" 
-                               required>
+                        <input type="text" id="admin-username" data-i18n-placeholder="usernamePlaceholder" placeholder="اسم المستخدم" required>
                     </div>
-
                     <div class="form-group">
-                        <input type="password" 
-                               id="admin-password" 
-                               data-i18n-placeholder="passwordPlaceholder" 
-                               placeholder="كلمة المرور" 
-                               required>
+                        <input type="password" id="admin-password" data-i18n-placeholder="passwordPlaceholder" placeholder="كلمة المرور" required>
                     </div>
-
-                    <button type="submit" class="submit-btn" data-i18n="loginBtn">
-                        دخول
-                    </button>
+                    <button type="submit" class="submit-btn" data-i18n="loginBtn">دخول</button>
                 </form>
             </div>
-
         </section>
     </main>
 
-    <!-- ==================== Footer (اختياري) ==================== -->
     <footer class="main-footer">
-        <p>© 2026 Tchad24News — جميع الحقوق محفوظة</p>
+        <p>© 2006 Tchad24News — جميع الحقوق محفوظة</p>
     </footer>
 
-    <!-- Script -->
     <script src="script.js"></script>
 </body>
 </html>
