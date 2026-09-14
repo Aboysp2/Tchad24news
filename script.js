@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const translations = {
         en: {
-            siteTitle: "Tchad24News",
+            siteTitle: "Labarkouh News",
             tickerTitle: "BREAKING",
             catChad: "🇹🇩 Chad",
             catAfrica: "🌍 Africa",
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
             notificationsDisabled: "Notifications Disabled."
         },
         fr: {
-            siteTitle: "Tchad24News",
+            siteTitle: "Labarkouh News",
             tickerTitle: "URGENT",
             catChad: "🇹🇩 Tchad",
             catAfrica: "🌍 Afrique",
@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
             notificationsDisabled: "Notifications désactivées."
         },
         ar: {
-            siteTitle: "تشاد24نيوز",
+            siteTitle: "لاباركوه نيوز",
             tickerTitle: "عاجل",
             catChad: "🇹🇩 تشاد",
             catAfrica: "🌍 إفريقيا",
